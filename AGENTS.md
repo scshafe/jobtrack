@@ -1,9 +1,5 @@
 # JobTrack agent contract
 
-> Deploys are paused until the runner lane's takeover (infra docs/platform/agent-deploy.md
-> phase 6): the owner's session dispatches the first deploy after draining the workers;
-> until then a merge to main does not deploy.
-
 JobTrack is a private, agent-operable job-search system: a SQLite store
 (`JOBTRACK_HOME`: `jobtrack.db` + `attachments/`), the `jobtrack` CLI and
 `skill/SKILL.md` (the only writer), and a read-only Express web view. Node >= 22,
@@ -18,7 +14,8 @@ build conventions below are the repo's own and still apply.
   better-sqlite3 on a release with prebuilt binaries (12.x): 13 builds from source, and
   the slim images have no compiler. Opt-in container suites: `npm run test:containers`
   (docker). Never use a personal store as a fixture (`docs/TEST_STORES.md`).
-- **Production:** merging to `main` deploys. `[deploy] lane = "runner"`, `layout = "app"`:
+- **Production:** a merge to `main` deploys (the runner lane since 2026-10-06; a deploy
+  recreates the worker, which finishes or cuts its pass within the 5-minute stop grace). `[deploy] lane = "runner"`, `layout = "app"`:
   `.github/workflows/deploy.yml` runs `[verify]` on a GitHub-hosted runner, then deploys
   through the host entrypoint on this repository's self-hosted runner on the laptop
   (`jobtrack-prod`), then checks health. The stack is this repository's `deploy/stack/`
