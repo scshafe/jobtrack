@@ -2,6 +2,7 @@
   "name": "jobtrack",
   "version": "2.0.0",
   "private": true,
+  "license": "MIT",
   "description": "SQLite-backed JobTrack CLI, skill surface, and read-only web view.",
   "type": "commonjs",
   "bin": {
