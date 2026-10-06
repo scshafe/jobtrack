@@ -11,6 +11,8 @@ permission before they can enter application grounding.
 
 Built by a Mission Control agent swarm (the first cross-team swarm trial).
 
+JobTrack is released under the [MIT licence](LICENSE).
+
 ## Shape
 
 JobTrack has **no chat layer and no write server**. It is three things:
