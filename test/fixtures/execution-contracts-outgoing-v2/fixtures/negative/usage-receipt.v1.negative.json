@@ -1,0 +1,148 @@
+{
+  "schemaName": "usage-receipt.v1",
+  "description": "PUBLISHED negative cases for usage-receipt.v1. Every `value` here MUST be REJECTED by the FROZEN JSON Schema on structural / allOf-if-then grounds alone (no code-side mirror rule needed). The cross-repo gate validates each case against every consumer's VENDORED copy of this schema and asserts a reject, proving the vendored copy still enforces the frozen constraints. Code-side-only floors (non-null charged floor, chargedTokens-covers-observed) are NOT here: the frozen schema deliberately admits them (CONVENTIONS §5), so they cannot be asserted structurally.",
+  "cases": [
+    {
+      "name": "null chargedTokens (must never be null)",
+      "reason": "chargedTokens $ref tokenCount => integer, null rejected",
+      "value": {
+        "schemaVersion": "usage-receipt.v1",
+        "trust": "provider_reported",
+        "observedInputTokens": 1200,
+        "observedOutputTokens": 340,
+        "chargedTokens": null,
+        "observedCostMicroUsd": 4200,
+        "chargedCostMicroUsd": 4200,
+        "durationMs": 5300
+      }
+    },
+    {
+      "name": "null chargedCostMicroUsd (must never be null)",
+      "reason": "chargedCostMicroUsd $ref microUsd => integer, null rejected",
+      "value": {
+        "schemaVersion": "usage-receipt.v1",
+        "trust": "provider_reported",
+        "observedInputTokens": 1200,
+        "observedOutputTokens": 340,
+        "chargedTokens": 1540,
+        "observedCostMicroUsd": 4200,
+        "chargedCostMicroUsd": null,
+        "durationMs": 5300
+      }
+    },
+    {
+      "name": "estimated_tier_ceiling carrying observed input tokens",
+      "reason": "allOf if-then: tier-ceiling => observed* must be null",
+      "value": {
+        "schemaVersion": "usage-receipt.v1",
+        "trust": "estimated_tier_ceiling",
+        "observedInputTokens": 100,
+        "observedOutputTokens": null,
+        "chargedTokens": 1,
+        "observedCostMicroUsd": null,
+        "chargedCostMicroUsd": 1,
+        "durationMs": 1
+      }
+    },
+    {
+      "name": "unavailable carrying observed cost",
+      "reason": "allOf if-then: unavailable => observedCostMicroUsd must be null",
+      "value": {
+        "schemaVersion": "usage-receipt.v1",
+        "trust": "unavailable",
+        "observedInputTokens": null,
+        "observedOutputTokens": null,
+        "chargedTokens": 1,
+        "observedCostMicroUsd": 500,
+        "chargedCostMicroUsd": 1,
+        "durationMs": 1
+      }
+    },
+    {
+      "name": "provider_reported with no observed value at all",
+      "reason": "allOf if-then anyOf: reported => >=1 observed integer",
+      "value": {
+        "schemaVersion": "usage-receipt.v1",
+        "trust": "provider_reported",
+        "observedInputTokens": null,
+        "observedOutputTokens": null,
+        "chargedTokens": 1,
+        "observedCostMicroUsd": null,
+        "chargedCostMicroUsd": 1,
+        "durationMs": 1
+      }
+    },
+    {
+      "name": "signature on a non-provider_signed receipt",
+      "reason": "allOf if-then-else: signature present only when provider_signed",
+      "value": {
+        "schemaVersion": "usage-receipt.v1",
+        "trust": "provider_reported",
+        "observedInputTokens": 1200,
+        "observedOutputTokens": 340,
+        "chargedTokens": 1540,
+        "observedCostMicroUsd": 4200,
+        "chargedCostMicroUsd": 4200,
+        "durationMs": 5300,
+        "signature": "opaque-token"
+      }
+    },
+    {
+      "name": "provider_signed missing its required signature",
+      "reason": "allOf if-then: provider_signed => signature required",
+      "value": {
+        "schemaVersion": "usage-receipt.v1",
+        "trust": "provider_signed",
+        "observedInputTokens": 1200,
+        "observedOutputTokens": 340,
+        "chargedTokens": 1540,
+        "observedCostMicroUsd": 4200,
+        "chargedCostMicroUsd": 4200,
+        "durationMs": 5300
+      }
+    },
+    {
+      "name": "unknown trust tier enum value",
+      "reason": "trust enum closed set",
+      "value": {
+        "schemaVersion": "usage-receipt.v1",
+        "trust": "free",
+        "observedInputTokens": null,
+        "observedOutputTokens": null,
+        "chargedTokens": 1,
+        "observedCostMicroUsd": null,
+        "chargedCostMicroUsd": 1,
+        "durationMs": 1
+      }
+    },
+    {
+      "name": "wrong schemaVersion const",
+      "reason": "schemaVersion const usage-receipt.v1",
+      "value": {
+        "schemaVersion": "usage-receipt.v2",
+        "trust": "unavailable",
+        "observedInputTokens": null,
+        "observedOutputTokens": null,
+        "chargedTokens": 1,
+        "observedCostMicroUsd": null,
+        "chargedCostMicroUsd": 1,
+        "durationMs": 1
+      }
+    },
+    {
+      "name": "unexpected additional property",
+      "reason": "additionalProperties:false",
+      "value": {
+        "schemaVersion": "usage-receipt.v1",
+        "trust": "unavailable",
+        "observedInputTokens": null,
+        "observedOutputTokens": null,
+        "chargedTokens": 1,
+        "observedCostMicroUsd": null,
+        "chargedCostMicroUsd": 1,
+        "durationMs": 1,
+        "grantsAuthority": true
+      }
+    }
+  ]
+}

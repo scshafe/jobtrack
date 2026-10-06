@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "jobtrack-correlation-result.v3",
+  "source": {
+    "provider": "apple_mail_emlx",
+    "accountId": "jobs@example.test",
+    "messageId": "apple-message-1",
+    "threadId": "apple-thread-1"
+  },
+  "factsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "policyRevisionId": 1,
+  "identity": {
+    "companyIds": [],
+    "basis": "none",
+    "confidence": 0
+  },
+  "resolution": "unmatched",
+  "candidates": [],
+  "evidence": [
+    {
+      "kind": "from_domain",
+      "value": "example.test"
+    }
+  ],
+  "automaticEligible": false,
+  "clarifiable": false
+}

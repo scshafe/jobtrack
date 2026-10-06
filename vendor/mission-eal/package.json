@@ -1,0 +1,66 @@
+{
+  "name": "mission-eal",
+  "version": "0.2.0",
+  "description": "Host-neutral execution environments, capability contracts, codebase ports, credential authority, context assembly, and Mission Pipeline agent-step adaptation.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/scshafe/mission-eal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/scshafe/mission-eal/issues"
+  },
+  "homepage": "https://github.com/scshafe/mission-eal#readme",
+  "engines": {
+    "node": ">=22.22.0 <23"
+  },
+  "packageManager": "npm@10.9.4",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./*": {
+      "types": "./lib/*.d.ts",
+      "default": "./lib/*.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node scripts/clean.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:boundary": "node scripts/check-import-boundary.mjs",
+    "test:payload": "node scripts/check-package-payload.mjs",
+    "test:install": "node scripts/check-pack-install.mjs",
+    "check": "npm run build && npm run test && npm run test:boundary && npm run test:payload && npm run test:install",
+    "verify": "npm run clean && npm run check && git diff --exit-code -- lib",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "mission-pipeline": "git+ssh://git@github.com/scshafe/mission-pipeline.git#d9d4e44dab5e41c67ec63565a9419863416ad85b",
+    "typescript": "5.8.3"
+  },
+  "mission-eal": {
+    "source": {
+      "repository": "https://github.com/scshafe/mission-control.git",
+      "commit": "74081469646d8d50f1e5922e28f818a4330306fb",
+      "path": "packages/mission-eal"
+    },
+    "missionPipelineCommit": "07855eb194782323dbbed402f59fe238b713f815"
+  },
+  "peerDependencies": {
+    "mission-pipeline": ">=0.2.0 <0.3.0"
+  }
+}

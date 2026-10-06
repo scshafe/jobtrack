@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "approval-receipt.v1",
+  "approvalId": "approval-0001",
+  "approvedArtifactContractId": "email-reply-draft-proposal.v2",
+  "approvedArtifactDigest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc",
+  "approver": {
+    "kind": "human",
+    "id": "owner@example.test"
+  },
+  "approvedAt": "2026-07-19T16:00:00.000Z",
+  "scope": {
+    "action": "send-once",
+    "recipient": "recruiter@example.test",
+    "threadId": "thread-1"
+  }
+}

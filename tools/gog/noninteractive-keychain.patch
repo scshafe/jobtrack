@@ -1,0 +1,273 @@
+diff --git a/internal/cmd/keychain_noninteractive.go b/internal/cmd/keychain_noninteractive.go
+new file mode 100644
+index 0000000..974de17
+--- /dev/null
++++ b/internal/cmd/keychain_noninteractive.go
+@@ -0,0 +1,37 @@
++package cmd
++
++import (
++	"errors"
++
++	"github.com/alecthomas/kong"
++)
++
++var errNoninteractiveKeychainPolicy = errors.New("jobtrack: noninteractive Keychain policy unavailable")
++
++// BeforeApply runs after Kong has resolved flags, but before command execution
++// or account/client credential lookup. NoInput alone previously suppressed CLI
++// prompts, not Security.framework dialogs. This process-local fence never
++// authorizes, unlocks, repairs, or changes permissions on any Keychain item.
++func (f *CLI) BeforeApply(ctx *kong.Context) error {
++	for _, flag := range ctx.Model.Flags {
++		if flag.Name != "no-input" {
++			continue
++		}
++		noInput, ok := ctx.FlagValue(flag).(bool)
++		if !ok {
++			return errNoninteractiveKeychainPolicy
++		}
++		if !noInput {
++			return nil // Never re-enable interaction or change foreground defaults.
++		}
++		disable := f.keychainUI
++		if disable == nil {
++			disable = disableNativeKeychainInteraction
++		}
++		if err := disable(); err != nil {
++			return errNoninteractiveKeychainPolicy // Do not expose native diagnostics.
++		}
++		return nil
++	}
++	return errNoninteractiveKeychainPolicy
++}
+diff --git a/internal/cmd/keychain_noninteractive_darwin.go b/internal/cmd/keychain_noninteractive_darwin.go
+new file mode 100644
+index 0000000..2107609
+--- /dev/null
++++ b/internal/cmd/keychain_noninteractive_darwin.go
+@@ -0,0 +1,22 @@
++//go:build darwin && cgo
++
++package cmd
++
++/*
++#cgo LDFLAGS: -framework Security
++#include <Security/SecKeychain.h>
++*/
++import "C"
++
++// Security.framework's interaction policy applies only to this gog process.
++// This does not edit ACLs, unlock a Keychain, or suppress another application's UI.
++func disableNativeKeychainInteraction() error {
++	if C.SecKeychainSetUserInteractionAllowed(C.Boolean(0)) != C.errSecSuccess {
++		return errNoninteractiveKeychainPolicy
++	}
++	var allowed C.Boolean
++	if C.SecKeychainGetUserInteractionAllowed(&allowed) != C.errSecSuccess || allowed != 0 {
++		return errNoninteractiveKeychainPolicy
++	}
++	return nil
++}
+diff --git a/internal/cmd/keychain_noninteractive_darwin_nocgo.go b/internal/cmd/keychain_noninteractive_darwin_nocgo.go
+new file mode 100644
+index 0000000..ecfc64b
+--- /dev/null
++++ b/internal/cmd/keychain_noninteractive_darwin_nocgo.go
+@@ -0,0 +1,7 @@
++//go:build darwin && !cgo
++
++package cmd
++
++// A non-CGO macOS build cannot guarantee the advertised native prompt fence.
++// Refuse before credential access rather than silently degrade --no-input.
++func disableNativeKeychainInteraction() error { return errNoninteractiveKeychainPolicy }
+diff --git a/internal/cmd/keychain_noninteractive_native_test.go b/internal/cmd/keychain_noninteractive_native_test.go
+new file mode 100644
+index 0000000..d442c01
+--- /dev/null
++++ b/internal/cmd/keychain_noninteractive_native_test.go
+@@ -0,0 +1,37 @@
++//go:build darwin && cgo
++
++package cmd
++
++import (
++	"io"
++	"os"
++	"os/exec"
++	"testing"
++)
++
++func TestJobTrackNoninteractiveKeychainNativeChild(t *testing.T) {
++	const childMarker = "JOBTRACK_GOG_NATIVE_UI_POLICY_TEST"
++	if os.Getenv(childMarker) == "1" {
++		// Real parser -> real native Set(false) -> Get(false) verification.
++		// No command Run(), store, credential, Keychain item, or provider call.
++		parser, _, err := newParserWithWriters("native policy fixture", io.Discard, io.Discard)
++		if err != nil {
++			t.Fatal(err)
++		}
++		if _, err := parser.Parse([]string{"--no-input", "version"}); err != nil {
++			t.Fatal(err)
++		}
++		return
++	}
++	executable, err := os.Executable()
++	if err != nil {
++		t.Fatal(err)
++	}
++	child := exec.Command(executable, "-test.run=^TestJobTrackNoninteractiveKeychainNativeChild$")
++	// No inherited credential variables or config selectors. This policy change
++	// exists only inside the disposable child, not the parent test process.
++	child.Env = []string{childMarker + "=1"}
++	if output, err := child.CombinedOutput(); err != nil {
++		t.Fatalf("native noninteractive policy child failed: %v: %s", err, output)
++	}
++}
+diff --git a/internal/cmd/keychain_noninteractive_other.go b/internal/cmd/keychain_noninteractive_other.go
+new file mode 100644
+index 0000000..29d08e5
+--- /dev/null
++++ b/internal/cmd/keychain_noninteractive_other.go
+@@ -0,0 +1,5 @@
++//go:build !darwin
++
++package cmd
++
++func disableNativeKeychainInteraction() error { return nil }
+diff --git a/internal/cmd/keychain_noninteractive_test.go b/internal/cmd/keychain_noninteractive_test.go
+new file mode 100644
+index 0000000..439cc3c
+--- /dev/null
++++ b/internal/cmd/keychain_noninteractive_test.go
+@@ -0,0 +1,117 @@
++package cmd
++
++import (
++	"bytes"
++	"context"
++	"errors"
++	"io"
++	"reflect"
++	"strings"
++	"testing"
++
++	"github.com/steipete/gogcli/internal/app"
++	"github.com/steipete/gogcli/internal/secrets"
++)
++
++func TestJobTrackNoninteractiveKeychainFlagAliasesAndForegroundDefaults(t *testing.T) {
++	for _, tc := range []struct {
++		args []string
++		want int
++	}{
++		{[]string{"version"}, 0}, {[]string{"--no-input=false", "version"}, 0},
++		{[]string{"--no-input", "version"}, 1}, {[]string{"--no-input=true", "version"}, 1},
++		{[]string{"--non-interactive", "version"}, 1}, {[]string{"--noninteractive", "version"}, 1},
++		{[]string{"version", "--no-input"}, 1}, {[]string{"--noninteractive=false", "version"}, 0},
++		{[]string{"--no-input", "gmail", "labels", "list"}, 1},
++		{[]string{"gmail", "labels", "list", "--non-interactive"}, 1},
++		{[]string{"--no-input", "calendar", "colors"}, 1},
++		{[]string{"--no-input", "drive", "ls"}, 1},
++	} {
++		t.Run(strings.Join(tc.args, " "), func(t *testing.T) {
++			parser, cli, err := newParserWithWriters("fixture", io.Discard, io.Discard)
++			if err != nil {
++				t.Fatal(err)
++			}
++			calls := 0
++			cli.keychainUI = func() error { calls++; return nil }
++			if _, err := parser.Parse(tc.args); err != nil {
++				t.Fatal(err)
++			}
++			if calls != tc.want {
++				t.Fatalf("native policy calls=%d, want %d", calls, tc.want)
++			}
++		})
++	}
++}
++
++func TestJobTrackNoninteractiveKeychainFailureStopsGmailBeforeRun(t *testing.T) {
++	parser, cli, err := newParserWithWriters("fixture", io.Discard, io.Discard)
++	if err != nil {
++		t.Fatal(err)
++	}
++	calls := 0
++	cli.keychainUI = func() error { calls++; return errors.New("native-detail-must-not-escape") }
++	parsed, err := parser.Parse([]string{"--no-input", "--account=worker@example.com", "gmail", "labels", "list"})
++	if err == nil || parsed != nil || calls != 1 || strings.Contains(err.Error(), "native-detail") {
++		t.Fatal("Gmail parsing did not fail closed before Run on native policy failure")
++	}
++}
++
++func TestJobTrackNoninteractiveKeychainFencePrecedesCredentialAccess(t *testing.T) {
++	for _, failPolicy := range []bool{false, true} {
++		var stdout, stderr bytes.Buffer
++		parser, cli, err := newParserWithWriters("fixture", &stdout, &stderr)
++		if err != nil {
++			t.Fatal(err)
++		}
++		var events []string
++		cli.keychainUI = func() error {
++			events = append(events, "disable-ui")
++			if failPolicy {
++				return errors.New("native-diagnostic-must-not-escape")
++			}
++			return nil
++		}
++		parsed, err := parser.Parse([]string{"--no-input", "--client=default", "--json", "auth", "inspect-account", "worker@example.com"})
++		if failPolicy {
++			if err == nil || strings.Contains(err.Error(), "native-diagnostic") || !reflect.DeepEqual(events, []string{"disable-ui"}) {
++				t.Fatal("native policy failure did not stop parsing with an opaque error")
++			}
++			continue
++		}
++		if err != nil {
++			t.Fatal(err)
++		}
++		store := &inspectAccountFixtureStore{token: secrets.Token{Email: "worker@example.com", Client: "default"}}
++		ctx := withAuthOperations(newCmdRuntimeJSONOutputContext(t, &stdout, &stderr), app.AuthOperations{
++			OpenSecretsStore: func() (secrets.Store, error) {
++				events = append(events, "open-credential-store")
++				return store, nil
++			},
++		})
++		parsed.BindTo(ctx, (*context.Context)(nil))
++		if err := parsed.Run(&cli.RootFlags); err != nil {
++			t.Fatal(err)
++		}
++		if !reflect.DeepEqual(events, []string{"disable-ui", "open-credential-store"}) || len(store.requested) != 1 {
++			t.Fatal("credential access did not follow the native prompt fence exactly once")
++		}
++	}
++}
++
++func TestJobTrackNoninteractiveKeychainDoesNotReenableAfterLaterInteractiveParse(t *testing.T) {
++	parser, cli, err := newParserWithWriters("fixture", io.Discard, io.Discard)
++	if err != nil {
++		t.Fatal(err)
++	}
++	calls := 0
++	cli.keychainUI = func() error { calls++; return nil }
++	for _, args := range [][]string{{"--no-input", "version"}, {"version"}} {
++		if _, err := parser.Parse(args); err != nil {
++			t.Fatal(err)
++		}
++	}
++	if calls != 1 {
++		t.Fatal("later parse attempted another native policy change")
++	}
++}
+diff --git a/internal/cmd/root.go b/internal/cmd/root.go
+index 5d2f2c9..14f2611 100644
+--- a/internal/cmd/root.go
++++ b/internal/cmd/root.go
+@@ -53,6 +53,7 @@ type RootFlags struct {
+ 	authOperations      app.AuthOperations
+ 	configStoreResolver func() (*config.ConfigStore, error)
+ 	authMode            googleapi.AuthMode
++	keychainUI          func() error // Test-only seam; never a CLI/environment selector.
+ }
+ 
+ type CLI struct {

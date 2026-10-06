@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/approval-receipt.v1.schema.json",
+  "title": "Approval receipt v1",
+  "description": "NEW. Records that a human approved EXACTLY these bytes at this time. `approvedArtifactDigest` binds the approval to one immutable draft artifact. The Inbox send edge re-verifies this digest before sending; a bytes-mismatch is unclaimable. v1 (FROZEN): `signature` is OPTIONAL and NOT required for the edge to accept a request — acceptance rests on digest-binding + an authenticated channel + the edge's independent recipient re-verification against the ingested thread. Cryptographic signing (signer identity, signed canonical bytes, verification-key delivery as an opaque handle) is deferred to v2 alongside JobTrack's signed-receipt protocol. `signature`, when present, is an opaque attestation that grants no authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "approvalId",
+    "approvedArtifactContractId",
+    "approvedArtifactDigest",
+    "approver",
+    "approvedAt",
+    "scope"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "approval-receipt.v1" },
+    "approvalId": { "$ref": "#/$defs/identifier" },
+    "approvedArtifactContractId": { "$ref": "#/$defs/contractId" },
+    "approvedArtifactDigest": {
+      "description": "Canonical SHA-256 of the EXACT approved bytes (rendered MIME or draft artifact). The send edge sends only bytes whose digest equals this.",
+      "$ref": "#/$defs/sha256"
+    },
+    "approver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": { "enum": ["human"] },
+        "id": { "type": "string", "minLength": 1, "maxLength": 320 }
+      }
+    },
+    "approvedAt": { "type": "string", "format": "date-time" },
+    "scope": {
+      "description": "Approval authorizes a single send of these bytes to the locked recipient. No standing authority.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "recipient", "threadId"],
+      "properties": {
+        "action": { "const": "send-once" },
+        "recipient": { "type": "string", "format": "email", "maxLength": 320 },
+        "threadId": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "signature": {
+      "description": "Opaque out-of-band attestation over the canonical approval bytes. Never a credential; never confers send authority by itself.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "contractId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9][a-z0-9._-]*\\.v[1-9][0-9]*$"
+    }
+  }
+}

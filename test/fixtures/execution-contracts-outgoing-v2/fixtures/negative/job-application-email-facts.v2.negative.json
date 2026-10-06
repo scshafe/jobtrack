@@ -1,0 +1,70 @@
+{
+  "schemaName": "job-application-email-facts.v2",
+  "description": "Provider-neutral facts v2 must reject malformed or relabeled provider authority.",
+  "cases": [
+    {
+      "name": "uppercase provider code",
+      "value": {
+        "schemaVersion": "job-application-email-facts.v2",
+        "trust": "untrusted_external",
+        "source": {
+          "provider": "Apple_Mail",
+          "accountId": "jobs@example.test",
+          "messageId": "message-1",
+          "threadId": "thread-1",
+          "receivedAt": "2026-07-22T18:00:00.000Z",
+          "fromAddress": "recruiter@example.test",
+          "fromDomain": "example.test",
+          "contentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "contentCompleteness": "sanitized_plain_text",
+        "eventKind": "unknown",
+        "postingRefs": [],
+        "applicationRefs": [],
+        "replyRequested": false,
+        "evidence": [],
+        "extraction": {
+          "provider": "inbox-pipeline",
+          "version": "jobtrack-relay.v3",
+          "confidence": 0.5
+        },
+        "security": {
+          "risk": "medium",
+          "requiresReview": true
+        }
+      }
+    },
+    {
+      "name": "legacy schema identity with Apple provider",
+      "value": {
+        "schemaVersion": "job-application-email-facts.v1",
+        "trust": "untrusted_external",
+        "source": {
+          "provider": "apple_mail_emlx",
+          "accountId": "jobs@example.test",
+          "messageId": "message-1",
+          "threadId": "thread-1",
+          "receivedAt": "2026-07-22T18:00:00.000Z",
+          "fromAddress": "recruiter@example.test",
+          "fromDomain": "example.test",
+          "contentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "contentCompleteness": "sanitized_plain_text",
+        "eventKind": "unknown",
+        "postingRefs": [],
+        "applicationRefs": [],
+        "replyRequested": false,
+        "evidence": [],
+        "extraction": {
+          "provider": "inbox-pipeline",
+          "version": "jobtrack-relay.v3",
+          "confidence": 0.5
+        },
+        "security": {
+          "risk": "medium",
+          "requiresReview": true
+        }
+      }
+    }
+  ]
+}

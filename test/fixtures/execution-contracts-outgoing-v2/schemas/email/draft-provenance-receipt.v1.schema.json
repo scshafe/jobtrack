@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/draft-provenance-receipt.v1.schema.json",
+  "title": "Draft provenance receipt v1",
+  "description": "NEW (co-developed with the email feature). Records what corpus sources + which model produced an email-reply-draft-proposal.v2, and embeds a UsageReceipt so a zero/absent draft receipt is visibly flagged (not silently accepted). Binds to the draft by draftProposalDigest. Read-only provenance; grants no authority. OPEN DECISION: whether corpusSources records digests inline (as here) or by reference.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "draftProposalId",
+    "draftProposalDigest",
+    "factsDigest",
+    "sourceStateSha256",
+    "generatedBy",
+    "corpusSources",
+    "usage",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "draft-provenance-receipt.v1" },
+    "receiptId": { "$ref": "#/$defs/identifier" },
+    "draftProposalId": { "$ref": "#/$defs/identifier" },
+    "draftProposalDigest": { "$ref": "#/$defs/sha256" },
+    "factsDigest": { "$ref": "#/$defs/sha256" },
+    "sourceStateSha256": {
+      "description": "Digest of the pinned read-only corpus projection the draft was produced over. A stale corpus fails closed upstream.",
+      "$ref": "#/$defs/sha256"
+    },
+    "generatedBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "version"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "model": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "modelVersion": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "routeAlias": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "^[a-z][a-z0-9-]*$" }
+      }
+    },
+    "corpusSources": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "digest"],
+        "properties": {
+          "kind": {
+            "enum": [
+              "profile-entry",
+              "writing-voice",
+              "past-communication",
+              "application-record",
+              "story-use",
+              "material-revision",
+              "inbound-thread",
+              "inbox-facts",
+              "company-research"
+            ]
+          },
+          "ref": { "type": "string", "minLength": 1, "maxLength": 300 },
+          "digest": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    },
+    "companyResearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["used", "brokered"],
+      "properties": {
+        "used": { "type": "boolean" },
+        "brokered": {
+          "description": "True only if fresh research went through the fail-closed exact-allowlist egress broker; never raw internet.",
+          "type": "boolean"
+        }
+      }
+    },
+    "usage": { "$ref": "https://execution-contracts.local/execution/usage-receipt.v1.schema.json" },
+    "createdAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" }
+  }
+}

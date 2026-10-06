@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/email-reply-draft-proposal.v2.schema.json",
+  "title": "Recipient-aware email reply draft proposal v2",
+  "description": "PROMOTED verbatim from JobTrack contracts/email/email-reply-draft-proposal.v2.schema.json (2026-07-18). Do not redesign. Closed enums, const autoSendEligible:false, const requiresReview:true, const registerAdaptationOnly:true, const distinctivePhraseReuse:false. JobTrack lib/email-contracts.js validateReplyDraftProposalV2 additionally enforces: bodyDigest == sha256(body) via its `digest` helper, recipient == source.replyToAddress (case-insensitive), and template authorship => templateId. Those cross-field checks are code-side (see CONVENTIONS.md) and must be preserved by consumers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "proposalId", "factsDigest", "source", "recipient", "subject", "body", "bodyDigest",
+    "purpose", "authorship", "expiresAt", "sensitiveDataScan", "toneDecisionId", "toneDecisionDigest",
+    "voiceRevisionId", "voiceRevisionDigest", "sourceStateSha256", "registerAdaptationOnly",
+    "distinctivePhraseReuse", "requiresReview", "autoSendEligible"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "email-reply-draft-proposal.v2" },
+    "proposalId": { "$ref": "#/$defs/identifier" },
+    "factsDigest": { "$ref": "#/$defs/sha256" },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provider", "accountId", "messageId", "threadId", "replyToAddress"],
+      "properties": {
+        "provider": { "enum": ["gmail", "fixture", "manual"] },
+        "accountId": { "type": "string", "minLength": 1, "maxLength": 320 },
+        "messageId": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "threadId": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "replyToAddress": { "type": "string", "format": "email", "maxLength": 320 }
+      }
+    },
+    "recipient": { "type": "string", "format": "email", "maxLength": 320 },
+    "subject": { "type": "string", "minLength": 1, "maxLength": 998 },
+    "body": { "type": "string", "minLength": 1, "maxLength": 20000 },
+    "bodyDigest": { "$ref": "#/$defs/sha256" },
+    "purpose": { "enum": ["acknowledgement", "scheduling", "information_response", "follow_up", "other"] },
+    "authorship": { "enum": ["template", "model", "human"] },
+    "templateId": { "$ref": "#/$defs/identifier" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "sensitiveDataScan": { "enum": ["passed", "requires_review"] },
+    "toneDecisionId": { "$ref": "#/$defs/identifier" },
+    "toneDecisionDigest": { "$ref": "#/$defs/sha256" },
+    "styleProfileId": { "$ref": "#/$defs/identifier" },
+    "styleProfileDigest": { "$ref": "#/$defs/sha256" },
+    "voiceRevisionId": { "$ref": "#/$defs/identifier" },
+    "voiceRevisionDigest": { "$ref": "#/$defs/sha256" },
+    "sourceStateSha256": { "$ref": "#/$defs/sha256" },
+    "registerAdaptationOnly": { "const": true },
+    "distinctivePhraseReuse": { "const": false },
+    "requiresReview": { "const": true },
+    "autoSendEligible": { "const": false }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" }
+  }
+}

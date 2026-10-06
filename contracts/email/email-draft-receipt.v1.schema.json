@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/email-draft-receipt.v1.schema.json",
+  "title": "Provider-neutral email draft receipt v1",
+  "description": "Append-only proof that a provider draft was created for one content-equivalent proposal and was not transmitted. It echoes the immutable generation/manifest, provider account, effective recipient, reply thread, proposal digest, and email-approved-content.v1 digest. A draft receipt is not an approval and grants no send authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "normalizationVersion",
+    "receiptId",
+    "draftProposalId",
+    "draftProposalDigest",
+    "contentDigest",
+    "generationId",
+    "manifestDigest",
+    "provider",
+    "accountId",
+    "recipient",
+    "threadId",
+    "providerDraftId",
+    "outcome",
+    "transmission",
+    "sendFidelity",
+    "observedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "email-draft-receipt.v1" },
+    "normalizationVersion": { "const": "email-text-nfc-lf.v1" },
+    "receiptId": { "$ref": "#/$defs/identifier" },
+    "draftProposalId": { "$ref": "#/$defs/identifier" },
+    "draftProposalDigest": { "$ref": "#/$defs/sha256" },
+    "contentDigest": {
+      "description": "Canonical digest of the exact email-approved-content.v1 projection displayed for review.",
+      "$ref": "#/$defs/sha256"
+    },
+    "generationId": { "$ref": "#/$defs/identifier" },
+    "manifestDigest": { "$ref": "#/$defs/sha256" },
+    "provider": { "$ref": "#/$defs/providerCode" },
+    "accountId": { "$ref": "#/$defs/accountId" },
+    "recipient": { "$ref": "#/$defs/emailAddress" },
+    "threadId": { "$ref": "#/$defs/threadId" },
+    "providerDraftId": { "$ref": "#/$defs/providerId" },
+    "providerThreadId": { "$ref": "#/$defs/providerId" },
+    "outcome": { "const": "created" },
+    "transmission": { "const": "not_sent" },
+    "sendFidelity": { "const": "content_equivalent" },
+    "observedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "providerCode": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z][a-z0-9._-]{0,63}$" },
+    "accountId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" },
+    "emailAddress": { "type": "string", "format": "email", "maxLength": 320 },
+    "threadId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" },
+    "providerId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" }
+  }
+}

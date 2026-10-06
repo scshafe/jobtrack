@@ -1,0 +1,62 @@
+{
+  "schemaName": "jobtrack-correlation-result.v1",
+  "description": "PUBLISHED negative cases for jobtrack-correlation-result.v1. Every value MUST be REJECTED by the FROZEN JSON Schema (structural only; the linked/ambiguous/unmatched cross-field rules are code-side per CONVENTIONS §5 and are NOT asserted here). Used by the cross-repo gate against each consumer's vendored copy.",
+  "cases": [
+    {
+      "name": "candidate confidence above 1.0",
+      "reason": "candidate.confidence maximum 1",
+      "value": {
+        "schemaVersion": "jobtrack-correlation-result.v1",
+        "source": { "provider": "gmail", "accountId": "jobs@example.test", "messageId": "message-1", "threadId": "thread-1" },
+        "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "resolution": "ambiguous",
+        "candidates": [
+          { "applicationId": 1, "applicationVersion": 0, "matchBasis": "fuzzy", "confidence": 1.5, "reasons": ["x"] }
+        ],
+        "evidence": [{ "kind": "from_domain", "value": "example.test" }],
+        "automaticEligible": false
+      }
+    },
+    {
+      "name": "unknown resolution enum value",
+      "reason": "resolution enum closed set",
+      "value": {
+        "schemaVersion": "jobtrack-correlation-result.v1",
+        "source": { "provider": "gmail", "accountId": "jobs@example.test", "messageId": "message-1", "threadId": "thread-1" },
+        "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "resolution": "maybe",
+        "candidates": [],
+        "evidence": [{ "kind": "from_domain", "value": "example.test" }],
+        "automaticEligible": false
+      }
+    },
+    {
+      "name": "candidate with non-positive applicationId",
+      "reason": "candidate.applicationId minimum 1",
+      "value": {
+        "schemaVersion": "jobtrack-correlation-result.v1",
+        "source": { "provider": "gmail", "accountId": "jobs@example.test", "messageId": "message-1", "threadId": "thread-1" },
+        "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "resolution": "linked",
+        "candidates": [
+          { "applicationId": 0, "applicationVersion": 0, "matchBasis": "fuzzy", "confidence": 0.9, "reasons": ["x"] }
+        ],
+        "evidence": [{ "kind": "from_domain", "value": "example.test" }],
+        "automaticEligible": false
+      }
+    },
+    {
+      "name": "malformed factsDigest (not bare 64-hex)",
+      "reason": "factsDigest pattern ^[a-f0-9]{64}$",
+      "value": {
+        "schemaVersion": "jobtrack-correlation-result.v1",
+        "source": { "provider": "gmail", "accountId": "jobs@example.test", "messageId": "message-1", "threadId": "thread-1" },
+        "factsDigest": "sha256:95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "resolution": "unmatched",
+        "candidates": [],
+        "evidence": [{ "kind": "from_domain", "value": "example.test" }],
+        "automaticEligible": false
+      }
+    }
+  ]
+}

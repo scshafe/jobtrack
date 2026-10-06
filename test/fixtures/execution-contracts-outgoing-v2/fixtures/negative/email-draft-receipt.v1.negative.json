@@ -1,0 +1,28 @@
+{
+  "schemaName": "email-draft-receipt.v1",
+  "description": "PUBLISHED mutation-focused negative cases for draft-only provider receipts.",
+  "cases": [
+    {
+      "name": "draft receipt cannot claim transmission",
+      "value": {
+        "schemaVersion": "email-draft-receipt.v1",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "receiptId": "draft-receipt-0001",
+        "draftProposalId": "draft-apple-0001",
+        "draftProposalDigest": "b5e02ba5a4f3d876f7cc0ca552bdcbd6b6936975f07b9cafc490d4e39f67e810",
+        "contentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "provider": "apple_mail_automation",
+        "accountId": "jobs@example.test",
+        "recipient": "recruiter@example.test",
+        "threadId": "apple-thread-1",
+        "providerDraftId": "apple-draft-9001",
+        "outcome": "created",
+        "transmission": "sent",
+        "sendFidelity": "content_equivalent",
+        "observedAt": "2026-08-01T05:35:00.000Z"
+      }
+    }
+  ]
+}

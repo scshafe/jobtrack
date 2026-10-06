@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "policyId": "company-research-acme",
+  "userAgent": "JobTrack-company-research/0.1 (+private operator tool)",
+  "allowedOrigins": [
+    {
+      "hostname": "www.acme.example",
+      "port": 443,
+      "paths": [
+        {
+          "match": "prefix",
+          "value": "/about/"
+        },
+        {
+          "match": "exact",
+          "value": "/press"
+        }
+      ],
+      "allowedQueryKeys": [],
+      "requiredQuery": {}
+    }
+  ],
+  "allowedContentTypes": [
+    "text/html",
+    "application/json"
+  ],
+  "limits": {
+    "maxRedirects": 1,
+    "timeoutMs": 15000,
+    "maxCompressedBytes": 1048576,
+    "maxDecompressedBytes": 2097152
+  }
+}

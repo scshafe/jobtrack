@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jobtrack.local/contracts/email-recipient-style-profile.v1.schema.json",
+  "title": "Recipient communication style profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "profileId", "source", "scope", "version", "observationIds", "dimensions",
+    "delivery", "confidence", "sample", "safeguards", "generatedBy",
+    "sourceStateSha256", "requiresReview"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "email-recipient-style-profile.v1" },
+    "profileId": { "$ref": "#/$defs/identifier" },
+    "source": { "$ref": "#/$defs/messageSource" },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "provider", "accountId", "threadId"],
+          "properties": {
+            "kind": { "const": "thread" },
+            "provider": { "enum": ["gmail", "fixture", "manual"] },
+            "accountId": { "type": "string", "minLength": 1, "maxLength": 320 },
+            "threadId": { "type": "string", "minLength": 1, "maxLength": 500 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "contactId"],
+          "properties": {
+            "kind": { "const": "contact" },
+            "contactId": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ]
+    },
+    "version": { "type": "integer", "minimum": 1 },
+    "observationIds": {
+      "type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifier" }
+    },
+    "dimensions": { "$ref": "#/$defs/dimensions" },
+    "delivery": { "$ref": "#/$defs/delivery" },
+    "confidence": { "enum": ["low", "medium", "high"] },
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eligibleMessageCount", "distinctThreadCount", "firstObservedAt", "lastObservedAt"],
+      "properties": {
+        "eligibleMessageCount": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "distinctThreadCount": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "firstObservedAt": { "type": "string", "format": "date-time" },
+        "lastObservedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "safeguards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registerAdaptationOnly", "sensitiveTraitInference", "personalityInference", "distinctivePhraseReuse"],
+      "properties": {
+        "registerAdaptationOnly": { "const": true },
+        "sensitiveTraitInference": { "const": false },
+        "personalityInference": { "const": false },
+        "distinctivePhraseReuse": { "const": false }
+      }
+    },
+    "generatedBy": { "$ref": "#/$defs/generator" },
+    "sourceStateSha256": { "$ref": "#/$defs/sha256" },
+    "requiresReview": { "const": true }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "messageSource": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provider", "accountId", "messageId", "threadId"],
+      "properties": {
+        "provider": { "enum": ["gmail", "fixture", "manual"] },
+        "accountId": { "type": "string", "minLength": 1, "maxLength": 320 },
+        "messageId": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "threadId": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "dimensions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["formality", "warmth", "energy", "directness", "verbosity"],
+      "properties": {
+        "formality": { "enum": ["casual", "neutral", "formal", "unknown"] },
+        "warmth": { "enum": ["reserved", "neutral", "warm", "unknown"] },
+        "energy": { "enum": ["restrained", "neutral", "upbeat", "unknown"] },
+        "directness": { "enum": ["direct", "balanced", "contextual", "unknown"] },
+        "verbosity": { "enum": ["terse", "concise", "moderate", "unknown"] }
+      }
+    },
+    "delivery": {
+      "type": "object", "additionalProperties": false,
+      "required": ["greeting", "closing", "exclamationPolicy", "emojiPolicy", "contractions"],
+      "properties": {
+        "greeting": { "enum": ["omit", "name", "hi", "hello", "dear"] },
+        "closing": { "enum": ["none", "thanks", "best", "regards"] },
+        "exclamationPolicy": { "enum": ["none", "at_most_one"] },
+        "emojiPolicy": { "enum": ["none", "reciprocal_only"] },
+        "contractions": { "enum": ["avoid", "allow"] }
+      }
+    },
+    "generator": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provider", "version", "policyVersion"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "model": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "policyVersion": { "const": "register-adaptation.v1" }
+      }
+    }
+  }
+}

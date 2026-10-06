@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "outgoing-v2-test-public-keys.v1",
+  "warning": "Public test keys only; never authorize production.",
+  "approval": {
+    "keyId": "jobtrack-approval-test-ed25519-v1",
+    "algorithm": "Ed25519",
+    "spkiDerBase64": "MCowBQYDK2VwAyEA0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc="
+  },
+  "nativeReceipt": {
+    "keyId": "apple-native-test-ed25519-v1",
+    "algorithm": "Ed25519",
+    "spkiDerBase64": "MCowBQYDK2VwAyEAoJql9HpnWYAv+VX43C0qFKXJnSO+l/hkEn/5ODRVpPA="
+  }
+}

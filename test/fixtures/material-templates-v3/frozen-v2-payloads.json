@@ -1,0 +1,23 @@
+{
+  "resume": {
+    "name": "Ada & Co. Lovelace",
+    "contactLine": "London — ada@example.test — example.test/ada",
+    "summary": "Engine programmer with $variables, #tags, and 100% analytical detail.",
+    "experience": [{
+      "title": "Analyst", "org": "Babbage_Labs", "location": "London", "dates": "1842 - 1843",
+      "context": "Mechanical computation research group.",
+      "bullets": ["Wrote Note G, the first published algorithm", "Modeled loops & branches with {parameters}, a~b^c, and \\commands"]
+    }],
+    "projects": [{"name": "Note G", "technologies": "Analytical Engine", "bullets": ["Bernoulli number generator"]}],
+    "education": [{"degree": "Self-taught", "org": "Private tutors", "dates": "1830s", "notes": ["Mathematics"]}],
+    "skills": [{"group": "Languages", "items": ["Analytical notation", "French"]}, {"group": "Methods", "items": ["Symbolic analysis", "Mechanism design"]}]
+  },
+  "coverLetter": {
+    "senderName": "Ada & Co. Lovelace",
+    "senderLines": ["London", "ada@example.test"],
+    "recipientLines": ["Hiring Team", "Babbage_Labs"],
+    "salutation": "Dear team,",
+    "paragraphs": ["I work with $variables, #tags, and 100% analytical detail.", "My Note G work models loops & branches with {parameters}, a~b^c, and \\commands."],
+    "closing": "Sincerely,"
+  }
+}

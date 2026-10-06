@@ -1,0 +1,95 @@
+{
+  "contact": {
+    "name": "Alex Example",
+    "email": "alex_example+jobs@example.test",
+    "location": "Portland, OR",
+    "github": "https://github.com/alex-example",
+    "linkedin": "https://www.linkedin.com/in/alex-example"
+  },
+  "summary": "Backend engineer building customer-facing services, reliable data workflows, and practical operational tools across logistics products, field-service integrations, and embedded systems.",
+  "experience": [
+    {
+      "org": "Example Freight Systems",
+      "title": "Software Engineer",
+      "dates": "Jan 2025 - Present",
+      "location": "Remote",
+      "bullets": [
+        "Moved long-running shipment quote requests from serverless functions to browser-direct streaming, preserving server-side audit logs and usage capture while removing the function timeout constraint.",
+        "Replaced opaque shipment manifest blobs with a relational line-item model in PostgreSQL, using migration checkpoints to support customs notes, attachments, quality review, and export without losing existing records.",
+        "Defined versioned event contracts across six product domains and generated TypeScript and Go clients, giving application developers a shared interface for publishing events and validating incoming messages.",
+        "Investigated duplicate billing events during concurrent retries, added transaction boundaries around ledger updates, and documented recovery procedures so support could reconcile affected accounts.",
+        "Reviewed rollout plans with product and support engineers, specified compatibility checks for older clients, and introduced a staged release checklist that made ownership and rollback decisions explicit."
+      ]
+    },
+    {
+      "org": "Example Field Services",
+      "title": "Software Engineer",
+      "dates": "Jul 2022 - Dec 2024",
+      "location": "Remote",
+      "bullets": [
+        "Built and operated scheduling and billing integrations for technician dispatch, translating inconsistent vendor APIs into customer workflows while preserving authorization checks and handling upstream service failures.",
+        "Owned dispatch-platform rollouts across hundreds of contractors, including groups with twenty depots, coordinating device provisioning, route configuration, test jobs, customer acceptance, and staged production launches.",
+        "Instrumented job routing and integration failures with structured logs and service dashboards, then used incident reviews to improve runbooks and catch repeated configuration problems before deployments.",
+        "Traced intermittent booking failures across vendor connectors, normalized inconsistent error responses, and added retry limits so customers received clear fallback instructions with the context operators needed."
+      ]
+    },
+    {
+      "org": "Example Embedded",
+      "title": "Software Engineer",
+      "dates": "Jun 2021 - Jun 2022",
+      "bullets": [
+        "Integrated C++ and Qt components into an agricultural sensor gateway, using a finite-state machine and interprocess communication to coordinate radio and cellular uploads as connectivity changed."
+      ]
+    },
+    {
+      "org": "Example Events",
+      "title": "Software Engineer",
+      "dates": "Sep 2020 - May 2021",
+      "bullets": [
+        "Implemented REST integrations with ticketing and identity services, and built authenticated AWS upload flows with CloudFront delivery so customers could publish event assets through the existing application interface."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Example Application Tracker",
+      "technologies": "Node.js, SQLite, Docker",
+      "bullets": [
+        "Directed an agent-built implementation, owning architecture, isolation boundaries, and release approval for its CLI, read-only web interface, and document pipeline against explicit acceptance criteria.",
+        "Ships a rollback-safe deploy step, CI-gated migrations, and an error-reporting client that other example services import, with an ownership statement per package."
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "group": "Languages",
+      "items": [
+        "TypeScript",
+        "JavaScript",
+        "Go",
+        "C++",
+        "SQL"
+      ]
+    },
+    {
+      "group": "Platforms",
+      "items": [
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Docker",
+        "REST APIs",
+        "Git",
+        "Linux"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "org": "Example University",
+      "degree": "BS, Computer Science",
+      "dates": "2019",
+      "notes": []
+    }
+  ]
+}

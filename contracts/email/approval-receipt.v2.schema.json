@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/approval-receipt.v2.schema.json",
+  "title": "Provider-neutral structural approval receipt v2",
+  "description": "Positive-only human consent for exactly one content-equivalent send. The receipt binds an immutable generation and manifest, one email-approved-content.v1 digest, one provider account, one effective recipient, one reply thread, one idempotency key, an expiry, a single authenticated approval channel, and a required JobTrack Ed25519 machine attestation. Rejections are separate review-domain events and cannot instantiate this contract. It is not standing authority: the send edge must resolve and verify the pinned JobTrack public key, independently authenticate the channel, rehash the content, resolve the inbound thread/effective recipient, enforce expiry, and consume the one-send idempotency key.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "normalizationVersion",
+    "approvalId",
+    "decision",
+    "idempotencyKey",
+    "generationId",
+    "manifestDigest",
+    "approvedContentContractId",
+    "approvedContentDigest",
+    "approver",
+    "approvedAt",
+    "expiresAt",
+    "scope",
+    "authenticatedChannel",
+    "attestation"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "approval-receipt.v2" },
+    "normalizationVersion": { "const": "email-text-nfc-lf.v1" },
+    "approvalId": { "$ref": "#/$defs/identifier" },
+    "decision": {
+      "description": "This receipt records positive authority only. A rejection is a separate review-domain event and never enters a send request.",
+      "const": "approve"
+    },
+    "idempotencyKey": {
+      "description": "The one-send key approved by the human; email-send-request.v2 and email-send-receipt.v2 must repeat it exactly.",
+      "$ref": "#/$defs/idempotencyKey"
+    },
+    "generationId": { "$ref": "#/$defs/identifier" },
+    "manifestDigest": { "$ref": "#/$defs/sha256" },
+    "approvedContentContractId": { "const": "email-approved-content.v1" },
+    "approvedContentDigest": {
+      "description": "Canonical SHA-256 of the complete email-approved-content.v1 instance displayed to the human.",
+      "$ref": "#/$defs/sha256"
+    },
+    "approver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": { "const": "human" },
+        "id": { "type": "string", "minLength": 1, "maxLength": 320 }
+      }
+    },
+    "approvedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "scope": {
+      "description": "The complete least-authority send scope. Every field is repeated by email-send-request.v2 and compared exactly by the send edge.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "maximumSends",
+        "sendFidelity",
+        "provider",
+        "accountId",
+        "recipient",
+        "threadId"
+      ],
+      "properties": {
+        "action": { "const": "send-once" },
+        "maximumSends": { "const": 1 },
+        "sendFidelity": { "const": "content_equivalent" },
+        "provider": { "$ref": "#/$defs/providerCode" },
+        "accountId": { "$ref": "#/$defs/accountId" },
+        "recipient": { "$ref": "#/$defs/emailAddress" },
+        "threadId": { "$ref": "#/$defs/threadId" }
+      }
+    },
+    "authenticatedChannel": {
+      "description": "Opaque proof reference for the fixed authenticated approval ingress. The value records authentication but never grants authority independently of all other bindings.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "channelId", "authenticated", "authenticationReceiptDigest"],
+      "properties": {
+        "kind": { "enum": ["jobtrack_fixed_command", "signed_local_bridge"] },
+        "channelId": { "$ref": "#/$defs/identifier" },
+        "authenticated": { "const": true },
+        "authenticationReceiptDigest": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "attestation": {
+      "description": "Required JobTrack machine attestation. Ed25519 signs the UTF-8 bytes of the package-canonical JSON approval payload obtained by removing this complete attestation property. payloadDigest is SHA-256 of those same canonical bytes. keyId is resolved only through the consumer's pinned JobTrack approval-key registry.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "keyId", "payloadDigest", "signatureEncoding", "signature"],
+      "properties": {
+        "algorithm": { "const": "Ed25519" },
+        "keyId": { "$ref": "#/$defs/keyId" },
+        "payloadDigest": { "$ref": "#/$defs/sha256" },
+        "signatureEncoding": { "const": "base64" },
+        "signature": {
+          "description": "Canonical padded base64 encoding of the 64-byte Ed25519 signature.",
+          "type": "string",
+          "minLength": 88,
+          "maxLength": 88,
+          "pattern": "^[A-Za-z0-9+/]{86}==$"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "keyId": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$" },
+    "idempotencyKey": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$" },
+    "providerCode": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z][a-z0-9._-]{0,63}$" },
+    "accountId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" },
+    "emailAddress": { "type": "string", "format": "email", "maxLength": 320 },
+    "threadId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" }
+  }
+}

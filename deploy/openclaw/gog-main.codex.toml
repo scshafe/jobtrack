@@ -1,0 +1,9 @@
+# Merge this table into MAIN's isolated agent/codex-home/config.toml only.
+# Do not replace the whole file or edit shared/user/private-journal configuration.
+# This complements gog-main.patch.json: native Codex shells ignore legacy
+# tools.exec.pathPrepend. Verify command -v gog through a fresh actual main turn.
+# Preserve the current runtime's ordinary PATH tail at deployment; generated
+# Codex vendor/tmp prefixes are per-process and must not be frozen here.
+# Reconcile the versioned Node directory during Node/runtime upgrades.
+[shell_environment_policy.set]
+PATH = "/Users/cole/.mission-control/projects/jobtrack/tools/gog/main-bin:/opt/homebrew/Cellar/node@24/24.18.0/bin:/usr/bin:/bin:/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/sbin:/sbin:/Users/cole/Library/pnpm/bin:/Users/cole/Library/pnpm:/Users/cole/.local/bin"

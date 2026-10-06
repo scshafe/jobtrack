@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "usage-receipt.v1",
+  "trust": "provider_reported",
+  "observedInputTokens": 1200,
+  "observedOutputTokens": 340,
+  "chargedTokens": 1540,
+  "observedCostMicroUsd": 4200,
+  "chargedCostMicroUsd": 4200,
+  "durationMs": 5300,
+  "routeAlias": "frontier-default"
+}

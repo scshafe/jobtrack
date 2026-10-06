@@ -1,0 +1,84 @@
+{
+  "schemaName": "environment-descriptor.v1",
+  "description": "Published negative cases for the additive email-adapter capability vocabulary. These remain structural rejects; a descriptor is only a declaration and never grants runtime authority by itself.",
+  "cases": [
+    {
+      "name": "unknown mail operation capability",
+      "reason": "mail operations are a closed read/draft/send enum",
+      "value": {
+        "schemaVersion": "environment-descriptor.v1",
+        "network": "egress-allowlist",
+        "capabilities": ["network:oauth", "mail:apply"],
+        "mounts": [],
+        "secretRefs": ["secretref:gmail-oauth:test-account"],
+        "io": {
+          "inputContract": "email-draft-request.v1",
+          "outputContract": "email-draft-result.v1"
+        }
+      }
+    },
+    {
+      "name": "write-capable local mail store spelling",
+      "reason": "the shared vocabulary exposes only filesystem:mail-store-ro",
+      "value": {
+        "schemaVersion": "environment-descriptor.v1",
+        "network": "none",
+        "capabilities": ["filesystem:mail-store-rw", "mail:read"],
+        "mounts": [{ "path": "/mail-store", "mode": "ro" }],
+        "secretRefs": [],
+        "io": {
+          "inputContract": "email-reader-page-request.v1",
+          "outputContract": "email-ingest-page.v1"
+        }
+      }
+    },
+    {
+      "name": "provider-branded network capability",
+      "reason": "provider authority is expressed by orthogonal transport and mail-operation capabilities",
+      "value": {
+        "schemaVersion": "environment-descriptor.v1",
+        "network": "egress-allowlist",
+        "capabilities": ["network:gmail", "mail:read"],
+        "mounts": [],
+        "secretRefs": ["secretref:gmail-oauth:test-account"],
+        "io": {
+          "inputContract": "email-reader-page-request.v1",
+          "outputContract": "email-ingest-page.v1"
+        }
+      }
+    },
+    {
+      "name": "none combined with mail send",
+      "reason": "none remains exclusive after the enum widening",
+      "value": {
+        "schemaVersion": "environment-descriptor.v1",
+        "network": "none",
+        "capabilities": ["none", "mail:send"],
+        "mounts": [],
+        "secretRefs": [],
+        "io": {
+          "inputContract": "email-send-request.v1",
+          "outputContract": "email-send-receipt.v1"
+        }
+      }
+    },
+    {
+      "name": "duplicate semantic mail capability",
+      "reason": "capabilities remain unique after the enum widening",
+      "value": {
+        "schemaVersion": "environment-descriptor.v1",
+        "network": "none",
+        "capabilities": [
+          "mail:read",
+          "mail:read"
+        ],
+        "mounts": [],
+        "secretRefs": [],
+        "io": {
+          "inputContract": "email-reader-page-request.v1",
+          "outputContract": "email-ingest-page.v1"
+        }
+      }
+    }
+  ]
+}

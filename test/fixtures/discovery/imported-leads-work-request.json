@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "kind": "strategy-work-request",
+  "manifest": {
+    "schemaVersion": 1,
+    "kind": "plugin-manifest",
+    "pluginId": "imported-leads",
+    "pluginVersion": "1.0.0",
+    "strategyKind": "imported-leads",
+    "parserName": "imported-leads",
+    "parserVersion": "1",
+    "networkPolicyId": null,
+    "capabilities": [
+      "import-leads"
+    ],
+    "inputSchemaId": "jobtrack.discovery.imported-leads.v1",
+    "outputSchemaId": "jobtrack.discovery.proposal-bundle.v1",
+    "limits": {
+      "maxRequests": 0,
+      "maxCompressedBytes": 1048576,
+      "maxDecompressedBytes": 1048576,
+      "maxInputBytes": 1048576,
+      "maxOutputBytes": 2097152,
+      "maxRuntimeMs": 10000
+    }
+  },
+  "run": {
+    "runId": "lead-import-20260717",
+    "sourceKey": "linkedin-alerts",
+    "strategyKind": "imported-leads",
+    "startedAt": "2026-07-17T20:00:00.000Z",
+    "completedAt": "2026-07-17T20:00:01.000Z"
+  },
+  "retrievals": [],
+  "input": {
+    "leads": [
+      {
+        "leadId": "linkedin-lead-123",
+        "sourceKey": "linkedin-alerts",
+        "provider": "linkedin",
+        "url": "https://www.linkedin.com/jobs/view/123",
+        "companyName": "Example AI",
+        "title": "Platform Engineer",
+        "externalId": "123",
+        "observedAt": "2026-07-17T20:00:00.000Z",
+        "note": "Imported from a user-provided alert; never fetched by JobTrack."
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "usage-receipt.v1",
+  "trust": "estimated_tier_ceiling",
+  "observedInputTokens": null,
+  "observedOutputTokens": null,
+  "chargedTokens": 2000,
+  "observedCostMicroUsd": null,
+  "chargedCostMicroUsd": 8000,
+  "durationMs": 4100,
+  "routeAlias": "frontier-default"
+}

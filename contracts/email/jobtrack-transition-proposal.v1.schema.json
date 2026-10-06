@@ -1,0 +1,413 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jobtrack.local/contracts/jobtrack-transition-proposal.v1.schema.json",
+  "title": "JobTrack transition proposal v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "proposalId",
+    "source",
+    "factsDigest",
+    "correlationDigest",
+    "target",
+    "expectedApplicationVersion",
+    "correlation",
+    "safety",
+    "action",
+    "policyCandidate",
+    "requiresReview",
+    "automationEligible",
+    "evidence"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "jobtrack-transition-proposal.v1"
+    },
+    "proposalId": {
+      "$ref": "#/$defs/identifier"
+    },
+    "source": {
+      "$ref": "#/$defs/messageRef"
+    },
+    "factsDigest": {
+      "$ref": "#/$defs/sha256"
+    },
+    "correlationDigest": {
+      "$ref": "#/$defs/sha256"
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationId"
+      ],
+      "properties": {
+        "applicationId": {
+          "$ref": "#/$defs/positiveId"
+        },
+        "companyId": {
+          "$ref": "#/$defs/positiveId"
+        },
+        "openingId": {
+          "$ref": "#/$defs/positiveId"
+        },
+        "postingId": {
+          "$ref": "#/$defs/positiveId"
+        },
+        "postingOccurrenceId": {
+          "$ref": "#/$defs/positiveId"
+        },
+        "interviewId": {
+          "$ref": "#/$defs/positiveId"
+        }
+      }
+    },
+    "expectedApplicationVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "correlation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resolution",
+        "matchBasis",
+        "confidence"
+      ],
+      "properties": {
+        "resolution": {
+          "const": "linked"
+        },
+        "matchBasis": {
+          "enum": [
+            "provider_application_id",
+            "previously_linked_message",
+            "previously_linked_thread",
+            "exact_posting_occurrence",
+            "exact_posting_url",
+            "company_and_role",
+            "company_only",
+            "fuzzy"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contentCompleteness",
+        "securityRisk",
+        "sourceRequiresReview"
+      ],
+      "properties": {
+        "contentCompleteness": {
+          "enum": [
+            "metadata_only",
+            "sanitized_plain_text"
+          ]
+        },
+        "securityRisk": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "sourceRequiresReview": {
+          "type": "boolean"
+        }
+      }
+    },
+    "action": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "relation"
+          ],
+          "properties": {
+            "kind": {
+              "const": "link_message"
+            },
+            "relation": {
+              "enum": [
+                "application_update",
+                "interview",
+                "offer",
+                "rejection",
+                "action_required",
+                "other"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "fromStatus",
+            "toStatus"
+          ],
+          "properties": {
+            "kind": {
+              "const": "transition_application_status"
+            },
+            "fromStatus": {
+              "$ref": "#/$defs/applicationStatus"
+            },
+            "toStatus": {
+              "$ref": "#/$defs/applicationStatus"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "round",
+            "scheduledAt",
+            "timezone",
+            "format"
+          ],
+          "properties": {
+            "kind": {
+              "const": "create_interview"
+            },
+            "round": {
+              "$ref": "#/$defs/interviewRound"
+            },
+            "scheduledAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "timezone": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "format": {
+              "$ref": "#/$defs/interviewFormat"
+            },
+            "interviewer": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "interviewId",
+            "fromScheduledAt",
+            "toScheduledAt",
+            "timezone"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reschedule_interview"
+            },
+            "interviewId": {
+              "$ref": "#/$defs/positiveId"
+            },
+            "fromScheduledAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "toScheduledAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "timezone": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "interviewId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "cancel_interview"
+            },
+            "interviewId": {
+              "$ref": "#/$defs/positiveId"
+            },
+            "cancelledAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "summary"
+          ],
+          "properties": {
+            "kind": {
+              "const": "record_offer"
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "decisionDeadline": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "requestKind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "record_requested_action"
+            },
+            "requestKind": {
+              "enum": [
+                "reply",
+                "schedule",
+                "complete_assessment",
+                "provide_information",
+                "review_offer",
+                "other"
+              ]
+            },
+            "deadline": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      ]
+    },
+    "policyCandidate": {
+      "enum": [
+        "never",
+        "exact_link",
+        "exact_status",
+        "exact_interview"
+      ]
+    },
+    "requiresReview": {
+      "type": "boolean"
+    },
+    "automationEligible": {
+      "type": "boolean"
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "positiveId": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "applicationStatus": {
+      "enum": [
+        "applied",
+        "interviewing",
+        "offer",
+        "rejected",
+        "withdrawn"
+      ]
+    },
+    "interviewRound": {
+      "enum": [
+        "screen",
+        "technical",
+        "onsite",
+        "final"
+      ]
+    },
+    "interviewFormat": {
+      "enum": [
+        "phone",
+        "video",
+        "onsite"
+      ]
+    },
+    "messageRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "accountId",
+        "messageId",
+        "threadId"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{0,79}$"
+        },
+        "accountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "messageId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "threadId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      }
+    }
+  }
+}

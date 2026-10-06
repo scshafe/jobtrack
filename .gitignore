@@ -1,0 +1,9 @@
+node_modules/
+.npm/
+*.db
+data/
+dist/
+.env*
+!.env.example
+.DS_Store
+.tools/

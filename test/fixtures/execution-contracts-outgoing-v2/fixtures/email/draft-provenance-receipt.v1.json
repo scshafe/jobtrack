@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "draft-provenance-receipt.v1",
+  "receiptId": "prov-0001",
+  "draftProposalId": "draft-0001",
+  "draftProposalDigest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc",
+  "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+  "sourceStateSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "generatedBy": {
+    "provider": "local-ubuntu",
+    "model": "qwen",
+    "version": "draft-reply.v1",
+    "routeAlias": "frontier-default"
+  },
+  "corpusSources": [
+    {
+      "kind": "writing-voice",
+      "ref": "voice-0001",
+      "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "kind": "inbox-facts",
+      "digest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5"
+    }
+  ],
+  "companyResearch": {
+    "used": false,
+    "brokered": false
+  },
+  "usage": {
+    "schemaVersion": "usage-receipt.v1",
+    "trust": "provider_reported",
+    "observedInputTokens": 1200,
+    "observedOutputTokens": 340,
+    "chargedTokens": 1540,
+    "observedCostMicroUsd": 4200,
+    "chargedCostMicroUsd": 4200,
+    "durationMs": 5300,
+    "routeAlias": "frontier-default"
+  },
+  "createdAt": "2026-07-19T15:00:00.000Z"
+}

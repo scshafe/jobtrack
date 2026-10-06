@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/email-send-request.v2.schema.json",
+  "title": "Provider-neutral content-equivalent email send request v2",
+  "description": "One-shot request for a provider-neutral content-equivalent sender. Unlike frozen email-send-request.v1, this lane never claims byte-exact rendered MIME. It references one content-addressed email-approved-content.v1 artifact and embeds approval-receipt.v2. The edge must compare generation, manifest, provider, account, recipient, thread, content digest, approval digest, and expiry; independently resolve recipient/thread evidence; consume the idempotency key; and stop for reconciliation after an indeterminate provider outcome.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "normalizationVersion",
+    "requestId",
+    "idempotencyKey",
+    "generationId",
+    "manifestDigest",
+    "provider",
+    "accountId",
+    "recipient",
+    "threadId",
+    "inReplyTo",
+    "references",
+    "threadEvidenceDigest",
+    "sendFidelity",
+    "content",
+    "approvalDigest",
+    "approval",
+    "requestedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "email-send-request.v2" },
+    "normalizationVersion": { "const": "email-text-nfc-lf.v1" },
+    "requestId": { "$ref": "#/$defs/identifier" },
+    "idempotencyKey": {
+      "description": "Stable for the one approved send. Duplicate claims with this key reconcile to one terminal/indeterminate provider attempt.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$"
+    },
+    "generationId": { "$ref": "#/$defs/identifier" },
+    "manifestDigest": { "$ref": "#/$defs/sha256" },
+    "provider": { "$ref": "#/$defs/providerCode" },
+    "accountId": { "$ref": "#/$defs/accountId" },
+    "recipient": { "$ref": "#/$defs/emailAddress" },
+    "threadId": { "$ref": "#/$defs/threadId" },
+    "inReplyTo": { "$ref": "#/$defs/messageReference" },
+    "references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/messageReference" }
+    },
+    "threadEvidenceDigest": {
+      "description": "Digest of the immutable inbound-thread/effective-recipient resolution evidence independently loaded by the send edge.",
+      "$ref": "#/$defs/sha256"
+    },
+    "sendFidelity": { "const": "content_equivalent" },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "contractId", "digest"],
+      "properties": {
+        "mode": { "const": "approved_content" },
+        "contractId": { "const": "email-approved-content.v1" },
+        "digest": {
+          "description": "Canonical SHA-256 of the retrieved email-approved-content.v1 instance; must equal approval.approvedContentDigest.",
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "approvalDigest": {
+      "description": "Canonical SHA-256 of the embedded approval-receipt.v2.",
+      "$ref": "#/$defs/sha256"
+    },
+    "approval": { "$ref": "https://execution-contracts.local/email/approval-receipt.v2.schema.json" },
+    "requestedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "providerCode": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z][a-z0-9._-]{0,63}$" },
+    "accountId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" },
+    "emailAddress": { "type": "string", "format": "email", "maxLength": 320 },
+    "threadId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" },
+    "messageReference": { "type": "string", "minLength": 1, "maxLength": 998, "pattern": "^[^\\r\\n]+$" }
+  }
+}

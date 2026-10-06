@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "environment-descriptor.v1",
+  "network": "egress-allowlist",
+  "capabilities": [
+    "network:egress-allowlist",
+    "network:oauth",
+    "mail:draft"
+  ],
+  "mounts": [],
+  "secretRefs": [
+    "secretref:gmail-oauth:test-account"
+  ],
+  "io": {
+    "inputContract": "email-draft-request.v1",
+    "outputContract": "email-draft-result.v1"
+  }
+}

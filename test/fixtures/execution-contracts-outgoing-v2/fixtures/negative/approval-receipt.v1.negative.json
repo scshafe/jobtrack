@@ -1,0 +1,72 @@
+{
+  "schemaName": "approval-receipt.v1",
+  "description": "PUBLISHED negative cases for approval-receipt.v1. Every value MUST be REJECTED by the FROZEN JSON Schema. Used by the cross-repo gate against each consumer's vendored copy.",
+  "cases": [
+    {
+      "name": "wrong schemaVersion const",
+      "reason": "schemaVersion const approval-receipt.v1",
+      "value": {
+        "schemaVersion": "approval-receipt.v2",
+        "approvalId": "approval-0001",
+        "approvedArtifactContractId": "email-reply-draft-proposal.v2",
+        "approvedArtifactDigest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc",
+        "approver": { "kind": "human", "id": "owner@example.test" },
+        "approvedAt": "2026-07-19T16:00:00.000Z",
+        "scope": { "action": "send-once", "recipient": "recruiter@example.test", "threadId": "thread-1" }
+      }
+    },
+    {
+      "name": "non-human approver kind",
+      "reason": "approver.kind const human",
+      "value": {
+        "schemaVersion": "approval-receipt.v1",
+        "approvalId": "approval-0001",
+        "approvedArtifactContractId": "email-reply-draft-proposal.v2",
+        "approvedArtifactDigest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc",
+        "approver": { "kind": "model", "id": "gpt" },
+        "approvedAt": "2026-07-19T16:00:00.000Z",
+        "scope": { "action": "send-once", "recipient": "recruiter@example.test", "threadId": "thread-1" }
+      }
+    },
+    {
+      "name": "malformed artifact digest (not bare 64-hex)",
+      "reason": "approvedArtifactDigest pattern ^[a-f0-9]{64}$",
+      "value": {
+        "schemaVersion": "approval-receipt.v1",
+        "approvalId": "approval-0001",
+        "approvedArtifactContractId": "email-reply-draft-proposal.v2",
+        "approvedArtifactDigest": "not-a-digest",
+        "approver": { "kind": "human", "id": "owner@example.test" },
+        "approvedAt": "2026-07-19T16:00:00.000Z",
+        "scope": { "action": "send-once", "recipient": "recruiter@example.test", "threadId": "thread-1" }
+      }
+    },
+    {
+      "name": "scope.action not send-once",
+      "reason": "scope.action const/enum send-once",
+      "value": {
+        "schemaVersion": "approval-receipt.v1",
+        "approvalId": "approval-0001",
+        "approvedArtifactContractId": "email-reply-draft-proposal.v2",
+        "approvedArtifactDigest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc",
+        "approver": { "kind": "human", "id": "owner@example.test" },
+        "approvedAt": "2026-07-19T16:00:00.000Z",
+        "scope": { "action": "send-many", "recipient": "recruiter@example.test", "threadId": "thread-1" }
+      }
+    },
+    {
+      "name": "unexpected additional property (grantsAuthority)",
+      "reason": "additionalProperties:false",
+      "value": {
+        "schemaVersion": "approval-receipt.v1",
+        "approvalId": "approval-0001",
+        "approvedArtifactContractId": "email-reply-draft-proposal.v2",
+        "approvedArtifactDigest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc",
+        "approver": { "kind": "human", "id": "owner@example.test" },
+        "approvedAt": "2026-07-19T16:00:00.000Z",
+        "scope": { "action": "send-once", "recipient": "recruiter@example.test", "threadId": "thread-1" },
+        "grantsAuthority": true
+      }
+    }
+  ]
+}

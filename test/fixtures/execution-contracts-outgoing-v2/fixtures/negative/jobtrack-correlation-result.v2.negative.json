@@ -1,0 +1,40 @@
+{
+  "schemaName": "jobtrack-correlation-result.v2",
+  "description": "Provider-neutral correlation v2 must preserve a valid exact provider code and v2 identity.",
+  "cases": [
+    {
+      "name": "provider code contains a slash",
+      "value": {
+        "schemaVersion": "jobtrack-correlation-result.v2",
+        "source": {
+          "provider": "apple/mail",
+          "accountId": "jobs@example.test",
+          "messageId": "message-1",
+          "threadId": "thread-1"
+        },
+        "factsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "resolution": "unmatched",
+        "candidates": [],
+        "evidence": [],
+        "automaticEligible": false
+      }
+    },
+    {
+      "name": "legacy correlation identity",
+      "value": {
+        "schemaVersion": "jobtrack-correlation-result.v1",
+        "source": {
+          "provider": "apple_mail_emlx",
+          "accountId": "jobs@example.test",
+          "messageId": "message-1",
+          "threadId": "thread-1"
+        },
+        "factsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "resolution": "unmatched",
+        "candidates": [],
+        "evidence": [],
+        "automaticEligible": false
+      }
+    }
+  ]
+}

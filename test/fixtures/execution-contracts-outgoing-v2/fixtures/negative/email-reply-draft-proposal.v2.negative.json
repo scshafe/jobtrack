@@ -1,0 +1,87 @@
+{
+  "schemaName": "email-reply-draft-proposal.v2",
+  "description": "PUBLISHED negative cases for email-reply-draft-proposal.v2. Every value MUST be REJECTED by the FROZEN JSON Schema (const safety fields, format, enums). The bodyDigest==sha256(body) and recipient==replyToAddress cross-field rules are code-side (CONVENTIONS §5) and are NOT asserted here. Used by the cross-repo gate against each consumer's vendored copy.",
+  "cases": [
+    {
+      "name": "recipient not an email",
+      "reason": "recipient format:email",
+      "value": {
+        "schemaVersion": "email-reply-draft-proposal.v2",
+        "proposalId": "draft-0001",
+        "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "source": { "provider": "gmail", "accountId": "jobs@example.test", "messageId": "message-1", "threadId": "thread-1", "replyToAddress": "recruiter@example.test" },
+        "recipient": "not-an-email",
+        "subject": "Re: Application communication",
+        "body": "Thanks for reaching out.",
+        "bodyDigest": "d1c1a687fb16bc94690273a41b7568f1a78cbeae76de4f314740879bf45c7415",
+        "purpose": "information_response",
+        "authorship": "model",
+        "expiresAt": "2026-07-26T02:00:00.000Z",
+        "sensitiveDataScan": "passed",
+        "toneDecisionId": "tone-0001",
+        "toneDecisionDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "voiceRevisionId": "voice-0001",
+        "voiceRevisionDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "sourceStateSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registerAdaptationOnly": true,
+        "distinctivePhraseReuse": false,
+        "requiresReview": true,
+        "autoSendEligible": false
+      }
+    },
+    {
+      "name": "autoSendEligible flipped to true (const safety field)",
+      "reason": "autoSendEligible const false",
+      "value": {
+        "schemaVersion": "email-reply-draft-proposal.v2",
+        "proposalId": "draft-0001",
+        "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "source": { "provider": "gmail", "accountId": "jobs@example.test", "messageId": "message-1", "threadId": "thread-1", "replyToAddress": "recruiter@example.test" },
+        "recipient": "recruiter@example.test",
+        "subject": "Re: Application communication",
+        "body": "Thanks for reaching out.",
+        "bodyDigest": "d1c1a687fb16bc94690273a41b7568f1a78cbeae76de4f314740879bf45c7415",
+        "purpose": "information_response",
+        "authorship": "model",
+        "expiresAt": "2026-07-26T02:00:00.000Z",
+        "sensitiveDataScan": "passed",
+        "toneDecisionId": "tone-0001",
+        "toneDecisionDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "voiceRevisionId": "voice-0001",
+        "voiceRevisionDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "sourceStateSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registerAdaptationOnly": true,
+        "distinctivePhraseReuse": false,
+        "requiresReview": true,
+        "autoSendEligible": true
+      }
+    },
+    {
+      "name": "requiresReview flipped to false (const safety field)",
+      "reason": "requiresReview const true",
+      "value": {
+        "schemaVersion": "email-reply-draft-proposal.v2",
+        "proposalId": "draft-0001",
+        "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "source": { "provider": "gmail", "accountId": "jobs@example.test", "messageId": "message-1", "threadId": "thread-1", "replyToAddress": "recruiter@example.test" },
+        "recipient": "recruiter@example.test",
+        "subject": "Re: Application communication",
+        "body": "Thanks for reaching out.",
+        "bodyDigest": "d1c1a687fb16bc94690273a41b7568f1a78cbeae76de4f314740879bf45c7415",
+        "purpose": "information_response",
+        "authorship": "model",
+        "expiresAt": "2026-07-26T02:00:00.000Z",
+        "sensitiveDataScan": "passed",
+        "toneDecisionId": "tone-0001",
+        "toneDecisionDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "voiceRevisionId": "voice-0001",
+        "voiceRevisionDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "sourceStateSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registerAdaptationOnly": true,
+        "distinctivePhraseReuse": false,
+        "requiresReview": false,
+        "autoSendEligible": false
+      }
+    }
+  ]
+}

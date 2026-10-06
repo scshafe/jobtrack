@@ -1,0 +1,7 @@
+{
+  "contractId": "job-application-email-facts.v1",
+  "note": "This exact digest is produced by BOTH Inbox src/hash.ts (localeCompare) AND JobTrack stableJson (code-unit) TODAY, because all keys are simple ASCII words. It is the anchor the live cross-repo test relies on.",
+  "rule": "canonical-json(code-unit key sort, recursive) then sha256, bare lowercase hex, no prefix",
+  "canonicalJson": "{\"applicationRefs\":[],\"contentCompleteness\":\"sanitized_plain_text\",\"eventKind\":\"action_required\",\"evidence\":[{\"excerpt\":\"recruiter@example.test\",\"field\":\"from\"},{\"excerpt\":\"Application communication\",\"field\":\"subject\"}],\"extraction\":{\"confidence\":0.87,\"provider\":\"inbox-pipeline\",\"version\":\"jobtrack-relay.v2\"},\"postingRefs\":[],\"replyRequested\":false,\"schemaVersion\":\"job-application-email-facts.v1\",\"security\":{\"requiresReview\":true,\"risk\":\"medium\"},\"source\":{\"accountId\":\"jobs@example.test\",\"contentDigest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"fromAddress\":\"recruiter@example.test\",\"fromDomain\":\"example.test\",\"messageId\":\"message-1\",\"provider\":\"gmail\",\"receivedAt\":\"2026-07-18T02:00:00.000Z\",\"threadId\":\"thread-1\"},\"trust\":\"untrusted_external\"}",
+  "digest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5"
+}

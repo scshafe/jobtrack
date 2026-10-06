@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/jobtrack-correlation-result.v1.schema.json",
+  "title": "JobTrack email correlation result v1",
+  "description": "PROMOTED verbatim from JobTrack contracts/email/jobtrack-correlation-result.v1.schema.json. `factsDigest` binds this result to the exact job-application-email-facts.v1 it was computed over (canonical digest per CONVENTIONS.md). NOTE: JobTrack lib/email-contracts.js validateCorrelationResult adds code-side rules NOT expressible here: linked => resolved present AND resolved is one of candidates AND automaticEligible reflects an exact normalized match; ambiguous => >=1 candidate; unmatched => 0 candidates; non-linked => automaticEligible=false. Inbox's producer schema (src/integration/jobtrack-relay-contracts.ts) expresses a subset of these via superRefine. Consumers must run both the JSON Schema AND the code checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "source", "factsDigest", "resolution", "candidates", "evidence", "automaticEligible"],
+  "properties": {
+    "schemaVersion": { "const": "jobtrack-correlation-result.v1" },
+    "source": { "$ref": "#/$defs/messageRef" },
+    "factsDigest": { "$ref": "#/$defs/sha256" },
+    "resolution": { "enum": ["linked", "ambiguous", "unmatched"] },
+    "resolved": { "$ref": "#/$defs/candidate" },
+    "candidates": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/candidate" } },
+    "evidence": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "value"],
+        "properties": {
+          "kind": { "type": "string", "minLength": 1, "maxLength": 100 },
+          "value": { "type": "string", "minLength": 1, "maxLength": 500 }
+        }
+      }
+    },
+    "automaticEligible": { "type": "boolean" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "positiveId": { "type": "integer", "minimum": 1 },
+    "messageRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "accountId", "messageId", "threadId"],
+      "properties": {
+        "provider": { "enum": ["gmail", "fixture", "manual"] },
+        "accountId": { "type": "string", "minLength": 1, "maxLength": 320 },
+        "messageId": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "threadId": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["applicationId", "applicationVersion", "matchBasis", "confidence", "reasons"],
+      "properties": {
+        "applicationId": { "$ref": "#/$defs/positiveId" },
+        "applicationVersion": { "type": "integer", "minimum": 0 },
+        "companyId": { "$ref": "#/$defs/positiveId" },
+        "openingId": { "$ref": "#/$defs/positiveId" },
+        "postingId": { "$ref": "#/$defs/positiveId" },
+        "postingOccurrenceId": { "$ref": "#/$defs/positiveId" },
+        "interviewId": { "$ref": "#/$defs/positiveId" },
+        "matchBasis": {
+          "enum": [
+            "provider_application_id",
+            "previously_linked_message",
+            "previously_linked_thread",
+            "exact_posting_occurrence",
+            "exact_posting_url",
+            "company_and_role",
+            "company_only",
+            "fuzzy"
+          ]
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "reasons": { "type": "array", "minItems": 1, "maxItems": 10, "items": { "type": "string", "minLength": 1, "maxLength": 300 } }
+      }
+    }
+  }
+}

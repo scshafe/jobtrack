@@ -1,0 +1,59 @@
+{
+  "resume": {
+    "name": "Ada & Co. Lovelace",
+    "contactLine": "London — ada@example.test — 100% analytical — a_b^c ~ d {e} \\ f",
+    "summary": "Engine programmer with $variables and #tags.",
+    "experience": [
+      {
+        "title": "Analyst",
+        "org": "Babbage_Labs",
+        "dates": "1842 - 1843",
+        "bullets": [
+          "Wrote Note G",
+          "Modeled loops & branches"
+        ]
+      },
+      {
+        "title": "Collaborator",
+        "org": "Difference Engine",
+        "dates": "1840",
+        "bullets": [
+          "Annotated Menabrea"
+        ]
+      }
+    ],
+    "education": [
+      {
+        "degree": "Self-taught",
+        "org": "Private tutors",
+        "dates": "1830s",
+        "notes": [
+          "Mathematics",
+          "Logic"
+        ]
+      }
+    ],
+    "skills": [
+      "mathematics",
+      "poetry",
+      "analysis"
+    ]
+  },
+  "coverLetter": {
+    "senderName": "Ada Lovelace",
+    "senderLines": [
+      "London",
+      "ada@example.test"
+    ],
+    "recipientLines": [
+      "Hiring Team",
+      "Babbage Labs"
+    ],
+    "salutation": "Dear team,",
+    "paragraphs": [
+      "I am applying for the Analyst role.",
+      "My Note G work maps directly — 100% relevant."
+    ],
+    "closing": "Sincerely,"
+  }
+}

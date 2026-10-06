@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jobtrack.local/contracts/application-strategy-work-result.v1.schema.json",
+  "title": "Application strategy work result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "trust",
+    "requestId",
+    "requestDigest",
+    "sourceStateSha256",
+    "status",
+    "worker",
+    "usage",
+    "confidence",
+    "summary",
+    "claims"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "application-strategy-work-result.v1" },
+    "trust": { "const": "model_proposal" },
+    "requestId": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+    "requestDigest": { "$ref": "#/$defs/sha256" },
+    "sourceStateSha256": { "$ref": "#/$defs/sha256" },
+    "status": { "enum": ["succeeded", "failed", "blocked"] },
+    "worker": { "$ref": "#/$defs/worker" },
+    "usage": { "$ref": "#/$defs/usage" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "summary": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" },
+    "claims": {
+      "type": "array",
+      "maxItems": 50,
+      "items": { "$ref": "#/$defs/claim" }
+    },
+    "output": { "$ref": "#/$defs/output" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "succeeded" } }, "required": ["status"] },
+      "then": { "required": ["output"] },
+      "else": { "not": { "required": ["output"] } }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "routeAlias": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "modelClass": {
+      "enum": ["deterministic", "economy", "strong", "frontier"]
+    },
+    "outputKind": {
+      "enum": [
+        "analysis",
+        "research-proposal",
+        "assessment-proposal",
+        "email-reply-draft-proposal",
+        "application-material-draft-proposal",
+        "interview-prep-proposal",
+        "render-result"
+      ]
+    },
+    "worker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runId", "routeAlias", "modelClass", "provider", "model"],
+      "properties": {
+        "runId": { "$ref": "#/$defs/identifier" },
+        "routeAlias": { "$ref": "#/$defs/routeAlias" },
+        "modelClass": { "$ref": "#/$defs/modelClass" },
+        "provider": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "\\S" },
+        "model": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S" },
+        "modelVersion": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S" }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inputTokens", "outputTokens", "costMicros", "durationMs"],
+      "properties": {
+        "inputTokens": { "type": "integer", "minimum": 0, "maximum": 10000000 },
+        "outputTokens": { "type": "integer", "minimum": 0, "maximum": 10000000 },
+        "costMicros": { "type": "integer", "minimum": 0, "maximum": 100000000000 },
+        "durationMs": { "type": "integer", "minimum": 0, "maximum": 86400000 }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement", "evidenceRefs"],
+      "properties": {
+        "statement": { "type": "string", "minLength": 1, "maxLength": 2000, "pattern": "\\S" },
+        "evidenceRefs": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "\\S" }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "payload"],
+      "properties": {
+        "kind": { "$ref": "#/$defs/outputKind" },
+        "payload": { "$ref": "#/$defs/safeJson" }
+      }
+    },
+    "safeJson": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "type": "number" },
+        { "type": "string", "maxLength": 100000 },
+        {
+          "type": "array",
+          "maxItems": 200,
+          "items": { "$ref": "#/$defs/safeJson" }
+        },
+        {
+          "type": "object",
+          "maxProperties": 200,
+          "propertyNames": {
+            "allOf": [
+              { "minLength": 1, "maxLength": 200 },
+              {
+                "not": {
+                  "pattern": "^(__proto__|[Pp][Rr][Oo][Tt][Oo][Tt][Yy][Pp][Ee]|[Cc][Oo][Nn][Ss][Tt][Rr][Uu][Cc][Tt][Oo][Rr])$|([Ee][Xx][Ee][Cc][Uu][Tt][Ee]|[Ee][Xx][Ee][Cc][Uu][Tt][Ii][Oo][Nn]|[Ss][Ee][Nn][Dd]|[Ss][Uu][Bb][Mm][Ii][Tt]|[Aa][Pp][Pp][Ll][Yy]|[Tt][Oo][Oo][Ll]|[Cc][Oo][Mm][Mm][Aa][Nn][Dd]|[Cc][Rr][Ee][Dd][Ee][Nn][Tt][Ii][Aa][Ll][Ss]?)(?=[A-Z_-]|$)|[Ee][Xx][Tt][Ee][Rr][Nn][Aa][Ll]([_-]|(?=[A-Z]))[Mm][Uu][Tt][Aa][Tt][Ii][Oo][Nn](?=[A-Z_-]|$)"
+                }
+              }
+            ]
+          },
+          "additionalProperties": { "$ref": "#/$defs/safeJson" }
+        }
+      ]
+    }
+  }
+}

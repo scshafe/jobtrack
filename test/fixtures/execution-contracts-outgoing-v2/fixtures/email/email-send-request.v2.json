@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "email-send-request.v2",
+  "normalizationVersion": "email-text-nfc-lf.v1",
+  "requestId": "send-req-apple-0001",
+  "idempotencyKey": "send-apple-thread-1-approved-content-0001",
+  "generationId": "job-platform-gen-0001",
+  "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "provider": "apple_mail_automation",
+  "accountId": "jobs@example.test",
+  "recipient": "recruiter@example.test",
+  "threadId": "apple-thread-1",
+  "inReplyTo": "<apple-message-1@example.test>",
+  "references": ["<apple-message-1@example.test>"],
+  "threadEvidenceDigest": "3333333333333333333333333333333333333333333333333333333333333333",
+  "sendFidelity": "content_equivalent",
+  "content": {
+    "mode": "approved_content",
+    "contractId": "email-approved-content.v1",
+    "digest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b"
+  },
+  "approvalDigest": "a6193a8c2d2888511730bde2aae0e6991925e20e78b7fb0deaa184f4b557365c",
+  "approval": {
+    "schemaVersion": "approval-receipt.v2",
+    "normalizationVersion": "email-text-nfc-lf.v1",
+    "approvalId": "approval-apple-0001",
+    "decision": "approve",
+    "idempotencyKey": "send-apple-thread-1-approved-content-0001",
+    "generationId": "job-platform-gen-0001",
+    "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "approvedContentContractId": "email-approved-content.v1",
+    "approvedContentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+    "approver": {
+      "kind": "human",
+      "id": "cole@example.test"
+    },
+    "approvedAt": "2026-08-01T05:40:00.000Z",
+    "expiresAt": "2026-08-01T06:40:00.000Z",
+    "scope": {
+      "action": "send-once",
+      "maximumSends": 1,
+      "sendFidelity": "content_equivalent",
+      "provider": "apple_mail_automation",
+      "accountId": "jobs@example.test",
+      "recipient": "recruiter@example.test",
+      "threadId": "apple-thread-1"
+    },
+    "authenticatedChannel": {
+      "kind": "jobtrack_fixed_command",
+      "channelId": "jobtrack-approval-ingress-0001",
+      "authenticated": true,
+      "authenticationReceiptDigest": "9999999999999999999999999999999999999999999999999999999999999999"
+    },
+    "attestation": {
+      "algorithm": "Ed25519",
+      "keyId": "jobtrack-approval-test-ed25519-v1",
+      "payloadDigest": "2624ab273e87d2b2b4b87fad38b30dff21cca34b7fa90604860c6464d1e68f28",
+      "signatureEncoding": "base64",
+      "signature": "Q+nEkEOZ+I0tvgMWFiVs4YQWzZSVHARYVw2Hx333s9OB0KH61jWFngxv+thPw6xZXja/4/kwaPGUFVGUC4BjDQ=="
+    }
+  },
+  "requestedAt": "2026-08-01T05:41:00.000Z",
+  "expiresAt": "2026-08-01T06:40:00.000Z"
+}

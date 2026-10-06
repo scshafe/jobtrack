@@ -1,0 +1,35 @@
+{
+  "apiVersion": "1",
+  "jobs": [
+    {
+      "id": "ashby-job-42",
+      "title": "Senior Platform Engineer",
+      "department": "Engineering",
+      "team": "Platform",
+      "location": "San Francisco, CA",
+      "workplaceType": "Hybrid",
+      "employmentType": "FullTime",
+      "descriptionHtml": "<h2>Build safely</h2><p>Own APIs &amp; infrastructure.</p><script>ignoreMe()</script><img src=x onerror=steal()>",
+      "descriptionPlain": null,
+      "publishedAt": "2026-07-15T18:30:00.000Z",
+      "isListed": true,
+      "jobUrl": "https://jobs.ashbyhq.com/acme/ashby-job-42",
+      "applyUrl": "https://jobs.ashbyhq.com/acme/ashby-job-42/application",
+      "secondaryLocations": ["New York, NY"],
+      "compensation": {"summary": "$180,000 - $220,000"},
+      "shouldDisplayCompensationOnJobPostings": true,
+      "address": null,
+      "jobPostingMetadata": {"requisitionId": "REQ-42"}
+    },
+    {
+      "id": "ashby-unlisted",
+      "title": "Unlisted Role",
+      "location": null,
+      "workplaceType": null,
+      "employmentType": null,
+      "publishedAt": null,
+      "isListed": false,
+      "jobUrl": "https://jobs.ashbyhq.com/acme/ashby-unlisted"
+    }
+  ]
+}

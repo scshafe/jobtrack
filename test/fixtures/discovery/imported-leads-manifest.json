@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "kind": "plugin-manifest",
+  "pluginId": "imported-leads",
+  "pluginVersion": "1.0.0",
+  "strategyKind": "imported-leads",
+  "parserName": "imported-leads",
+  "parserVersion": "1",
+  "networkPolicyId": null,
+  "capabilities": [
+    "import-leads"
+  ],
+  "inputSchemaId": "jobtrack.discovery.imported-leads.v1",
+  "outputSchemaId": "jobtrack.discovery.proposal-bundle.v1",
+  "limits": {
+    "maxRequests": 0,
+    "maxCompressedBytes": 1048576,
+    "maxDecompressedBytes": 1048576,
+    "maxInputBytes": 1048576,
+    "maxOutputBytes": 2097152,
+    "maxRuntimeMs": 10000
+  }
+}

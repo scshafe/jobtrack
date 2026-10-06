@@ -1,0 +1,15 @@
+{
+  "agents": {
+    "entries": {
+      "main": {
+        "tools": {
+          "exec": {
+            "pathPrepend": [
+              "/Users/cole/.mission-control/projects/jobtrack/tools/gog/main-bin"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

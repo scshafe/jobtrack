@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "policyId": "fixture-public-board",
+  "userAgent": "JobTrack-discovery-test/1.0 (+fixture-only)",
+  "allowedOrigins": [
+    {
+      "hostname": "jobs.example.test",
+      "port": 443,
+      "paths": [
+        {
+          "match": "exact",
+          "value": "/board/acme"
+        },
+        {
+          "match": "prefix",
+          "value": "/api/jobs/"
+        }
+      ],
+      "allowedQueryKeys": [
+        "content"
+      ],
+      "requiredQuery": {
+        "content": "true"
+      }
+    },
+    {
+      "hostname": "redirect.example.test",
+      "port": 443,
+      "paths": [
+        {
+          "match": "exact",
+          "value": "/final"
+        }
+      ],
+      "allowedQueryKeys": [],
+      "requiredQuery": {}
+    }
+  ],
+  "allowedContentTypes": [
+    "application/json",
+    "text/plain"
+  ],
+  "limits": {
+    "maxRedirects": 2,
+    "timeoutMs": 20000,
+    "maxCompressedBytes": 1048576,
+    "maxDecompressedBytes": 1048576
+  }
+}

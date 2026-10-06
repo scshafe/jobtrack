@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/email-send-receipt.v1.schema.json",
+  "title": "Email send receipt v1",
+  "description": "NEW. Emitted by the Inbox send edge after a send attempt and correlated back to JobTrack (append-only). Echoes the idempotencyKey and the request digest, records the provider message-id and status. `sent` carries the provider identifiers ONLY when status=sent; `skipped_duplicate` means the idempotency guard already sent these bytes; `failed` carries a bounded reason and no provider message-id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "requestId",
+    "idempotencyKey",
+    "requestDigest",
+    "status",
+    "observedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "email-send-receipt.v1" },
+    "receiptId": { "$ref": "#/$defs/identifier" },
+    "requestId": { "$ref": "#/$defs/identifier" },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$"
+    },
+    "requestDigest": {
+      "description": "Canonical SHA-256 of the email-send-request.v1 this receipt answers.",
+      "$ref": "#/$defs/sha256"
+    },
+    "status": { "enum": ["sent", "skipped_duplicate", "failed"] },
+    "provider": { "enum": ["gmail", "fixture", "manual"] },
+    "providerMessageId": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "providerThreadId": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "failureReason": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "observedAt": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [
+    {
+      "description": "A successful send carries provider identifiers and no failure reason.",
+      "if": { "properties": { "status": { "const": "sent" } }, "required": ["status"] },
+      "then": {
+        "required": ["provider", "providerMessageId"],
+        "not": { "required": ["failureReason"] }
+      }
+    },
+    {
+      "description": "A duplicate skip carries the provider that originally sent and no failure reason.",
+      "if": { "properties": { "status": { "const": "skipped_duplicate" } }, "required": ["status"] },
+      "then": {
+        "required": ["provider", "providerMessageId"],
+        "not": { "required": ["failureReason"] }
+      }
+    },
+    {
+      "description": "A failure carries a reason and NO provider message id.",
+      "if": { "properties": { "status": { "const": "failed" } }, "required": ["status"] },
+      "then": {
+        "required": ["failureReason"],
+        "not": { "required": ["providerMessageId"] }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" }
+  }
+}

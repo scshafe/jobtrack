@@ -1,0 +1,7 @@
+{
+  "contractId": "email-approved-content.v1",
+  "note": "This digest is the semantic content lock repeated by approval, draft, request, and send receipts; it does not claim provider-rendered MIME byte identity.",
+  "rule": "canonical-json(code-unit key sort, recursive) then sha256, bare lowercase hex, no prefix",
+  "canonicalJson": "{\"accountId\":\"jobs@example.test\",\"attachments\":[],\"body\":{\"digest\":\"d1c1a687fb16bc94690273a41b7568f1a78cbeae76de4f314740879bf45c7415\",\"mediaType\":\"text/plain\",\"text\":\"Thanks for reaching out. I am glad to continue the conversation and will follow up with the requested details shortly.\"},\"contentId\":\"approved-content-0001\",\"createdAt\":\"2026-08-01T05:30:00.000Z\",\"generationId\":\"job-platform-gen-0001\",\"manifestDigest\":\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\",\"normalizationVersion\":\"email-text-nfc-lf.v1\",\"provider\":\"apple_mail_automation\",\"recipient\":\"recruiter@example.test\",\"requiresHumanApproval\":true,\"schemaVersion\":\"email-approved-content.v1\",\"sendFidelity\":\"content_equivalent\",\"subject\":\"Re: Application communication\",\"thread\":{\"inReplyTo\":\"<apple-message-1@example.test>\",\"references\":[\"<apple-message-1@example.test>\"],\"threadId\":\"apple-thread-1\"}}",
+  "digest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b"
+}

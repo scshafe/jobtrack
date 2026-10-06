@@ -1,0 +1,62 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[margin=0.63in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{charter}
+\usepackage{xcolor}
+\definecolor{jtlink}{rgb}{0.05,0.24,0.52}
+\usepackage[colorlinks=true,urlcolor=jtlink,linkcolor=black,citecolor=black,filecolor=black]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\raggedright
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\pagestyle{empty}
+\newcommand{\jtsection}[1]{\par\vspace{5pt}{\fontsize{11.5pt}{13pt}\selectfont\bfseries #1}\par\nobreak\vspace{1.5pt}\hrule\vspace{3pt}\nobreak}
+\newenvironment{jtitems}
+  {\begin{list}{\textbullet}{\setlength{\leftmargin}{12pt}\setlength{\labelwidth}{6pt}\setlength{\labelsep}{6pt}\setlength{\itemsep}{1pt}\setlength{\parsep}{0pt}\setlength{\topsep}{2pt}\setlength{\partopsep}{0pt}}}
+  {\end{list}}
+\begin{document}
+\fontsize{10.5pt}{12pt}\selectfont
+{\fontsize{20pt}{22pt}\selectfont\bfseries Alex Example}\par\vspace{2pt}
+Portland, OR \textperiodcentered{} \href{mailto:alex\_example+jobs@example.test}{alex\_example+jobs@example.test} \textperiodcentered{} \href{https://github.com/alex-example}{github.com/alex-example} \textperiodcentered{} \href{https://www.linkedin.com/in/alex-example}{linkedin.com/in/alex-example}\par
+\jtsection{Summary}
+Backend engineer building customer-facing services, reliable data workflows, and practical operational tools across logistics products, field-service integrations, and embedded systems.\par
+\jtsection{Experience}
+\textbf{Example Freight Systems} --- Software Engineer \textperiodcentered{} \textit{Jan 2025 - Present \textperiodcentered{} Remote}\par\nopagebreak[3]
+\begin{jtitems}
+\item Moved long-running shipment quote requests from serverless functions to browser-direct streaming, preserving server-side audit logs and usage capture while removing the function timeout constraint.
+\item Replaced opaque shipment manifest blobs with a relational line-item model in PostgreSQL, using migration checkpoints to support customs notes, attachments, quality review, and export without losing existing records.
+\item Defined versioned event contracts across six product domains and generated TypeScript and Go clients, giving application developers a shared interface for publishing events and validating incoming messages.
+\item Investigated duplicate billing events during concurrent retries, added transaction boundaries around ledger updates, and documented recovery procedures so support could reconcile affected accounts.
+\item Reviewed rollout plans with product and support engineers, specified compatibility checks for older clients, and introduced a staged release checklist that made ownership and rollback decisions explicit.
+\end{jtitems}
+\vspace{2pt}
+\textbf{Example Field Services} --- Software Engineer \textperiodcentered{} \textit{Jul 2022 - Dec 2024 \textperiodcentered{} Remote}\par\nopagebreak[3]
+\begin{jtitems}
+\item Built and operated scheduling and billing integrations for technician dispatch, translating inconsistent vendor APIs into customer workflows while preserving authorization checks and handling upstream service failures.
+\item Owned dispatch-platform rollouts across hundreds of contractors, including groups with twenty depots, coordinating device provisioning, route configuration, test jobs, customer acceptance, and staged production launches.
+\item Instrumented job routing and integration failures with structured logs and service dashboards, then used incident reviews to improve runbooks and catch repeated configuration problems before deployments.
+\item Traced intermittent booking failures across vendor connectors, normalized inconsistent error responses, and added retry limits so customers received clear fallback instructions with the context operators needed.
+\end{jtitems}
+\vspace{2pt}
+\textbf{Example Embedded} --- Software Engineer \textperiodcentered{} \textit{Jun 2021 - Jun 2022}\par\nopagebreak[3]
+\begin{jtitems}
+\item Integrated C++ and Qt components into an agricultural sensor gateway, using a finite-state machine and interprocess communication to coordinate radio and cellular uploads as connectivity changed.
+\end{jtitems}
+\vspace{2pt}
+\textbf{Example Events} --- Software Engineer \textperiodcentered{} \textit{Sep 2020 - May 2021}\par\nopagebreak[3]
+\begin{jtitems}
+\item Implemented REST integrations with ticketing and identity services, and built authenticated AWS upload flows with CloudFront delivery so customers could publish event assets through the existing application interface.
+\end{jtitems}
+\jtsection{Projects}
+\textbf{Example Application Tracker} --- Node.js, SQLite, Docker\par\nopagebreak[3]
+\begin{jtitems}
+\item Directed an agent-built implementation, owning architecture, isolation boundaries, and release approval for its CLI, read-only web interface, and document pipeline against explicit acceptance criteria.
+\item Ships a rollback-safe deploy step, CI-gated migrations, and an error-reporting client that other example services import, with an ownership statement per package.
+\end{jtitems}
+\jtsection{Technical Skills}
+\textbf{Languages:} TypeScript, JavaScript, Go, C++, SQL\par
+\textbf{Platforms:} Node.js, PostgreSQL, AWS, Docker, REST APIs, Git, Linux\par
+\jtsection{Education}
+\textbf{Example University} --- BS, Computer Science \textperiodcentered{} 2019\par
+\end{document}

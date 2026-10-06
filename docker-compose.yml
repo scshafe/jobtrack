@@ -1,0 +1,48 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        JOBTRACK_VERSION: "${JOBTRACK_VERSION:-2.0.0}"
+        JOBTRACK_REVISION: "${JOBTRACK_REVISION:-unknown}"
+    restart: unless-stopped
+    init: true
+    # Match the host owner so a 0700/0600 private store remains readable without
+    # weakening its permissions. Pass JOBTRACK_UID/GID from `id -u` / `id -g`.
+    user: "${JOBTRACK_UID:?Set JOBTRACK_UID to the host store owner UID}:${JOBTRACK_GID:?Set JOBTRACK_GID to the host store owner GID}"
+    environment:
+      JOBTRACK_HOME: /jobtrack
+      # The container must listen on its network interface. The published host
+      # port below remains loopback-only, so this is a deliberate safe override.
+      JOBTRACK_ALLOW_NON_LOOPBACK: "1"
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      # Bind to loopback only: the web view is reached over the tailnet via
+      # `tailscale serve` HTTPS (tailnet-only TLS), never exposed on 0.0.0.0/LAN.
+      - "127.0.0.1:${JOBTRACK_WEB_PORT:-3000}:3000"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    mem_limit: 256m
+    cpus: 0.50
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3000/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - type: bind
+        source: ${JOBTRACK_HOME:?Set JOBTRACK_HOME to your JobTrack store directory}
+        target: /jobtrack
+        read_only: true

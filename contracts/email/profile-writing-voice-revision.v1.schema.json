@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jobtrack.local/contracts/profile-writing-voice-revision.v1.schema.json",
+  "title": "Cole-owned writing voice revision v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "voiceKey", "revisionId", "version", "label", "dimensions", "delivery",
+    "ownership", "sampleDigests", "authoredBy", "createdAt", "requiresReview"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "profile-writing-voice-revision.v1" },
+    "voiceKey": { "$ref": "#/$defs/identifier" },
+    "revisionId": { "$ref": "#/$defs/identifier" },
+    "version": { "type": "integer", "minimum": 1 },
+    "label": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "dimensions": { "$ref": "#/$defs/dimensions" },
+    "delivery": { "$ref": "#/$defs/delivery" },
+    "ownership": {
+      "type": "object", "additionalProperties": false,
+      "required": ["owner", "source", "attestedBy", "attestedAt"],
+      "properties": {
+        "owner": { "const": "Cole" },
+        "source": { "enum": ["manual", "cole_owned_samples"] },
+        "attestedBy": { "const": "Cole" },
+        "attestedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "sampleDigests": {
+      "type": "array", "maxItems": 8, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/sha256" }
+    },
+    "authoredBy": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "requiresReview": { "const": true }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "dimensions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["formality", "warmth", "energy", "directness", "verbosity"],
+      "properties": {
+        "formality": { "enum": ["casual", "neutral", "formal"] },
+        "warmth": { "enum": ["reserved", "neutral", "warm"] },
+        "energy": { "enum": ["restrained", "neutral", "upbeat"] },
+        "directness": { "enum": ["direct", "balanced", "contextual"] },
+        "verbosity": { "enum": ["terse", "concise", "moderate"] }
+      }
+    },
+    "delivery": {
+      "type": "object", "additionalProperties": false,
+      "required": ["greeting", "closing", "exclamationPolicy", "emojiPolicy", "contractions", "maxBandShift"],
+      "properties": {
+        "greeting": { "enum": ["omit", "name", "hi", "hello", "dear"] },
+        "closing": { "enum": ["none", "thanks", "best", "regards"] },
+        "exclamationPolicy": { "enum": ["none", "at_most_one"] },
+        "emojiPolicy": { "const": "none" },
+        "contractions": { "enum": ["avoid", "allow"] },
+        "maxBandShift": { "enum": [0, 1] }
+      }
+    }
+  }
+}

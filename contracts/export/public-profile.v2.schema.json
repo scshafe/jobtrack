@@ -1,0 +1,550 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "jobtrack:export/public-profile.v2",
+  "title": "JobTrack public profile export v2",
+  "description": "Allowlisted, uuid-keyed public projection of the JobTrack profile. v2 adds display curation (pinned flags, display ordering, hidden-entry exclusion), project kinds, public repo links, and uses relations. This schema is the cross-repo contract consumed by the pages-generator site build. Every property is an explicit allowlist decision: additionalProperties is false at every level, integer row ids never appear, and private fields (email, phone, compensation, EEO, references, notice period, work authorization, visa) have no representation here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "contractVersion",
+    "generatedAt",
+    "contact",
+    "workEntries",
+    "education",
+    "projects",
+    "skills",
+    "links",
+    "publications",
+    "recognitions",
+    "languages",
+    "volunteer",
+    "stories"
+  ],
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "nullableString": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "skillRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/uuid"
+      }
+    }
+  },
+  "properties": {
+    "contract": {
+      "const": "public-profile"
+    },
+    "contractVersion": {
+      "const": 2
+    },
+    "generatedAt": {
+      "type": "string"
+    },
+    "contact": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "headline",
+        "professionalSummary"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "headline": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "professionalSummary": {
+          "$ref": "#/$defs/nullableString"
+        }
+      }
+    },
+    "workEntries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "company",
+          "roleTitle",
+          "startDate",
+          "endDate",
+          "isPresent",
+          "location",
+          "highlights",
+          "description",
+          "skills",
+          "pinned"
+        ],
+        "properties": {
+          "uuid": {
+            "$ref": "#/$defs/uuid"
+          },
+          "company": {
+            "type": "string"
+          },
+          "roleTitle": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "isPresent": {
+            "type": "boolean"
+          },
+          "location": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "highlights": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "description": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "skills": {
+            "$ref": "#/$defs/skillRefs"
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "institution",
+          "degree",
+          "fieldOfStudy",
+          "startDate",
+          "endDate",
+          "graduationYear",
+          "honors",
+          "skills",
+          "pinned"
+        ],
+        "properties": {
+          "uuid": {
+            "$ref": "#/$defs/uuid"
+          },
+          "institution": {
+            "type": "string"
+          },
+          "degree": {
+            "type": "string"
+          },
+          "fieldOfStudy": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "graduationYear": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "honors": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "skills": {
+            "$ref": "#/$defs/skillRefs"
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "name",
+          "description",
+          "stack",
+          "role",
+          "url",
+          "links",
+          "startDate",
+          "endDate",
+          "highlights",
+          "skills",
+          "pinned",
+          "kind",
+          "repos",
+          "uses"
+        ],
+        "properties": {
+          "uuid": {
+            "$ref": "#/$defs/uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "stack": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "role": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "url": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "startDate": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "endDate": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "highlights": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "skills": {
+            "$ref": "#/$defs/skillRefs"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "application",
+              "library",
+              "service",
+              "site",
+              "tool",
+              "experiment"
+            ]
+          },
+          "repos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "url",
+                "role"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string",
+                  "pattern": "^https://"
+                },
+                "role": {
+                  "enum": [
+                    "primary",
+                    "component",
+                    "deploy-target",
+                    "mirror",
+                    "docs"
+                  ]
+                }
+              }
+            }
+          },
+          "uses": {
+            "$ref": "#/$defs/skillRefs"
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "name",
+          "category",
+          "proficiency",
+          "years"
+        ],
+        "properties": {
+          "uuid": {
+            "$ref": "#/$defs/uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "proficiency": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "years": {
+            "$ref": "#/$defs/nullableString"
+          }
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "kind",
+          "label",
+          "url",
+          "username",
+          "pinned"
+        ],
+        "properties": {
+          "uuid": {
+            "$ref": "#/$defs/uuid"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "label": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "url": {
+            "type": "string"
+          },
+          "username": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "publications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "kind",
+          "title",
+          "publisher",
+          "publishedAt",
+          "url",
+          "description",
+          "pinned"
+        ],
+        "properties": {
+          "uuid": {
+            "$ref": "#/$defs/uuid"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "publisher": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "publishedAt": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "url": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "description": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "recognitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "kind",
+          "title",
+          "issuer",
+          "awardedAt",
+          "description",
+          "url",
+          "pinned"
+        ],
+        "properties": {
+          "uuid": {
+            "$ref": "#/$defs/uuid"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "issuer": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "awardedAt": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "description": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "url": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "language",
+          "proficiency",
+          "pinned"
+        ],
+        "properties": {
+          "uuid": {
+            "$ref": "#/$defs/uuid"
+          },
+          "language": {
+            "type": "string"
+          },
+          "proficiency": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "volunteer": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "organization",
+          "role",
+          "cause",
+          "startDate",
+          "endDate",
+          "isPresent",
+          "location",
+          "description",
+          "highlights",
+          "pinned"
+        ],
+        "properties": {
+          "uuid": {
+            "$ref": "#/$defs/uuid"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "cause": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "startDate": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "endDate": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "isPresent": {
+            "type": "boolean"
+          },
+          "location": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "description": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "highlights": {
+            "$ref": "#/$defs/nullableString"
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "stories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "title",
+          "content"
+        ],
+        "properties": {
+          "uuid": {
+            "$ref": "#/$defs/uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

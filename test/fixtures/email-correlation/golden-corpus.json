@@ -1,0 +1,403 @@
+{
+  "schemaVersion": "jobtrack-email-correlation-golden-corpus.v1",
+  "cases": [
+    {
+      "name": "welcome_chat_loose_body_role_two_open",
+      "store": {
+        "activityAt": "2026-09-01T20:00:00.000Z",
+        "applications": [
+          { "key": "platform", "company": "Acme Robotics", "role": "Platform Engineer", "status": "applied" },
+          { "key": "sre", "company": "Acme Robotics", "role": "Site Reliability Engineer", "status": "applied" }
+        ],
+        "companyDomains": { "Acme Robotics": "acme-robotics.com" },
+        "priorThreadLink": null
+      },
+      "facts": {
+        "source": { "messageId": "welcome-chat", "threadId": "welcome-chat", "fromAddress": "priya@acme-robotics.com", "fromDomain": "acme-robotics.com", "fromDisplayName": "Priya Natarajan" },
+        "eventKind": "recruiter_followup",
+        "company": { "name": "Acme Robotics", "domain": "acme-robotics.com" },
+        "postingRefs": [{ "roleTitle": "the platform role" }],
+        "replyRequested": true,
+        "evidence": [
+          { "field": "subject", "excerpt": "Welcome Chat" },
+          { "field": "body", "excerpt": "Hi Cole, thanks for applying for the platform role." }
+        ]
+      },
+      "record": false,
+      "expected": {
+        "identity": { "companyIds": ["Acme Robotics"], "basis": "domain", "confidence": 0.75 },
+        "resolution": "ambiguous",
+        "automaticEligible": false,
+        "clarifiable": false,
+        "preferredApplication": "platform",
+        "resolvedApplication": null,
+        "resolvedBasis": null,
+        "candidateOrder": [
+          ["platform", "body_role_title"],
+          ["platform", "company_mention"],
+          ["sre", "company_mention"],
+          ["platform", "company_domain"],
+          ["sre", "company_domain"]
+        ],
+        "learnedRows": []
+      }
+    },
+    {
+      "name": "ats_sender_company_in_display_name_one_open",
+      "store": {
+        "activityAt": "2026-09-01T20:00:00.000Z",
+        "applications": [
+          { "key": "platform", "company": "Acme Robotics", "role": "Platform Engineer", "status": "applied" }
+        ],
+        "companyDomains": {},
+        "priorThreadLink": null
+      },
+      "facts": {
+        "source": { "messageId": "ats-welcome", "threadId": "ats-welcome", "fromAddress": "no-reply@greenhouse.io", "fromDomain": "greenhouse.io", "fromDisplayName": "Acme Robotics via Greenhouse" },
+        "eventKind": "recruiter_followup",
+        "company": { "name": "Acme Robotics" },
+        "postingRefs": [{ "roleTitle": "Platform Engineer" }],
+        "replyRequested": true,
+        "evidence": [
+          { "field": "subject", "excerpt": "Welcome Chat" },
+          { "field": "body", "excerpt": "Thanks for applying for Platform Engineer." }
+        ]
+      },
+      "record": true,
+      "expected": {
+        "identity": { "companyIds": ["Acme Robotics"], "basis": "mention", "confidence": 0.6 },
+        "resolution": "linked",
+        "automaticEligible": false,
+        "clarifiable": false,
+        "preferredApplication": null,
+        "resolvedApplication": "platform",
+        "resolvedBasis": "company_single_open",
+        "candidateOrder": [
+          ["platform", "body_role_title"],
+          ["platform", "company_single_open"],
+          ["platform", "company_and_role"],
+          ["platform", "company_mention"]
+        ],
+        "learnedRows": []
+      }
+    },
+    {
+      "name": "consumer_recruiter_body_names_one_of_two_roles",
+      "store": {
+        "activityAt": "2026-09-01T20:00:00.000Z",
+        "applications": [
+          { "key": "platform", "company": "Acme Robotics", "role": "Platform Engineer", "status": "applied" },
+          { "key": "sre", "company": "Acme Robotics", "role": "Site Reliability Engineer", "status": "applied" }
+        ],
+        "companyDomains": {},
+        "priorThreadLink": null
+      },
+      "facts": {
+        "source": { "messageId": "consumer-chat", "threadId": "consumer-chat", "fromAddress": "priya.recruiting@gmail.com", "fromDomain": "gmail.com", "fromDisplayName": "Priya Natarajan" },
+        "eventKind": "recruiter_followup",
+        "company": { "name": "Acme Robotics" },
+        "postingRefs": [{ "roleTitle": "Site Reliability Engineer" }],
+        "replyRequested": true,
+        "evidence": [
+          { "field": "subject", "excerpt": "Quick question" },
+          { "field": "body", "excerpt": "I am reaching out about the Site Reliability Engineer position." }
+        ]
+      },
+      "record": false,
+      "expected": {
+        "identity": { "companyIds": ["Acme Robotics"], "basis": "mention", "confidence": 0.6 },
+        "resolution": "ambiguous",
+        "automaticEligible": false,
+        "clarifiable": false,
+        "preferredApplication": "sre",
+        "resolvedApplication": null,
+        "resolvedBasis": null,
+        "candidateOrder": [
+          ["sre", "body_role_title"],
+          ["sre", "company_and_role"],
+          ["platform", "company_mention"],
+          ["sre", "company_mention"]
+        ],
+        "learnedRows": []
+      }
+    },
+    {
+      "name": "two_roles_same_company_without_body_role",
+      "store": {
+        "activityAt": "2026-09-01T20:00:00.000Z",
+        "applications": [
+          { "key": "platform", "company": "Acme Robotics", "role": "Platform Engineer", "status": "applied" },
+          { "key": "sre", "company": "Acme Robotics", "role": "Site Reliability Engineer", "status": "applied" }
+        ],
+        "companyDomains": { "Acme Robotics": "acme-robotics.com" },
+        "priorThreadLink": null
+      },
+      "facts": {
+        "source": { "messageId": "which-role", "threadId": "which-role", "fromAddress": "priya@acme-robotics.com", "fromDomain": "acme-robotics.com", "fromDisplayName": "Priya Natarajan" },
+        "eventKind": "recruiter_followup",
+        "company": { "name": "Acme Robotics", "domain": "acme-robotics.com" },
+        "postingRefs": [],
+        "replyRequested": true,
+        "evidence": [
+          { "field": "subject", "excerpt": "Next steps" },
+          { "field": "body", "excerpt": "Thanks for applying to Acme Robotics. Let's chat." }
+        ]
+      },
+      "record": false,
+      "expected": {
+        "identity": { "companyIds": ["Acme Robotics"], "basis": "domain", "confidence": 0.75 },
+        "resolution": "ambiguous",
+        "automaticEligible": false,
+        "clarifiable": true,
+        "preferredApplication": null,
+        "resolvedApplication": null,
+        "resolvedBasis": null,
+        "candidateOrder": [
+          ["platform", "company_mention"],
+          ["sre", "company_mention"],
+          ["platform", "company_domain"],
+          ["sre", "company_domain"]
+        ],
+        "learnedRows": []
+      }
+    },
+    {
+      "name": "rewritten_subject_in_previously_linked_thread",
+      "store": {
+        "activityAt": "2026-09-01T20:00:00.000Z",
+        "applications": [
+          { "key": "platform", "company": "Acme Robotics", "role": "Platform Engineer", "status": "interviewing" },
+          { "key": "sre", "company": "Acme Robotics", "role": "Site Reliability Engineer", "status": "applied" }
+        ],
+        "companyDomains": { "Acme Robotics": "acme-robotics.com" },
+        "priorThreadLink": { "threadId": "existing-thread", "application": "platform" }
+      },
+      "facts": {
+        "source": { "messageId": "rewritten-reply", "threadId": "existing-thread", "fromAddress": "priya@acme-robotics.com", "fromDomain": "acme-robotics.com", "fromDisplayName": "Priya Natarajan" },
+        "eventKind": "recruiter_followup",
+        "company": { "name": "Acme Robotics", "domain": "acme-robotics.com" },
+        "postingRefs": [{ "roleTitle": "the platform role" }],
+        "replyRequested": false,
+        "evidence": [
+          { "field": "subject", "excerpt": "Re: One more thing" },
+          { "field": "body", "excerpt": "Thanks, that time works for the platform role." }
+        ]
+      },
+      "record": true,
+      "expected": {
+        "identity": { "companyIds": ["Acme Robotics"], "basis": "domain", "confidence": 0.75 },
+        "resolution": "linked",
+        "automaticEligible": true,
+        "clarifiable": false,
+        "preferredApplication": null,
+        "resolvedApplication": "platform",
+        "resolvedBasis": "previously_linked_thread",
+        "candidateOrder": [
+          ["platform", "previously_linked_thread"],
+          ["platform", "body_role_title"],
+          ["platform", "company_mention"],
+          ["sre", "company_mention"],
+          ["platform", "company_domain"],
+          ["sre", "company_domain"]
+        ],
+        "learnedRows": [
+          {
+            "kind": "contact",
+            "company": "Acme Robotics",
+            "application": null,
+            "value": "priya@acme-robotics.com",
+            "normalizedValue": "priya@acme-robotics.com",
+            "sourceMessage": "current",
+            "sourceCorrelation": "current",
+            "actor": "jobtrack:record-correlation",
+            "retracted": false
+          },
+          {
+            "kind": "domain",
+            "company": "Acme Robotics",
+            "application": null,
+            "value": "acme-robotics.com",
+            "normalizedValue": "acme-robotics.com",
+            "sourceMessage": "current",
+            "sourceCorrelation": "current",
+            "actor": "jobtrack:record-correlation",
+            "retracted": false
+          },
+          {
+            "kind": "title_alias",
+            "company": null,
+            "application": "platform",
+            "value": "the platform role",
+            "normalizedValue": "the platform role",
+            "sourceMessage": "current",
+            "sourceCorrelation": "current",
+            "actor": "jobtrack:record-correlation",
+            "retracted": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "provider_coalesced_thread_body_names_other_role",
+      "store": {
+        "activityAt": "2026-09-01T20:00:00.000Z",
+        "applications": [
+          { "key": "platform", "company": "Acme Robotics", "role": "Platform Engineer", "status": "applied" },
+          { "key": "sre", "company": "Acme Robotics", "role": "Site Reliability Engineer", "status": "applied" }
+        ],
+        "companyDomains": { "Acme Robotics": "acme-robotics.com" },
+        "priorThreadLink": { "threadId": "provider-coalesced-thread", "application": "platform" }
+      },
+      "facts": {
+        "source": {
+          "messageId": "provider-coalesced-second-message",
+          "threadId": "provider-coalesced-thread",
+          "fromAddress": "priya@acme-robotics.com",
+          "fromDomain": "acme-robotics.com",
+          "fromDisplayName": "Priya Natarajan"
+        },
+        "eventKind": "application_received",
+        "company": { "name": "Acme Robotics", "domain": "acme-robotics.com" },
+        "postingRefs": [{ "roleTitle": "Site Reliability Engineer" }],
+        "replyRequested": false,
+        "evidence": [
+          { "field": "subject", "excerpt": "Welcome Chat" },
+          { "field": "body", "excerpt": "Thank you for applying to Site Reliability Engineer at Acme Robotics." }
+        ]
+      },
+      "record": false,
+      "expected": {
+        "identity": { "companyIds": ["Acme Robotics"], "basis": "domain", "confidence": 0.75 },
+        "resolution": "ambiguous",
+        "automaticEligible": false,
+        "clarifiable": false,
+        "preferredApplication": "sre",
+        "resolvedApplication": null,
+        "resolvedBasis": null,
+        "candidateOrder": [
+          ["platform", "previously_linked_thread"],
+          ["sre", "body_role_title"],
+          ["sre", "company_and_role"],
+          ["platform", "company_mention"],
+          ["sre", "company_mention"],
+          ["platform", "company_domain"],
+          ["sre", "company_domain"]
+        ],
+        "learnedRows": []
+      }
+    },
+    {
+      "name": "applysim_welcome_chat_two_drove_roles",
+      "store": {
+        "activityAt": "2026-09-01T20:00:00.000Z",
+        "applications": [
+          { "key": "drove_staff", "company": "Drove", "role": "Staff Software Engineer", "status": "applied" },
+          { "key": "drove_design", "company": "Drove", "role": "Senior Product Designer", "status": "applied" }
+        ],
+        "companyDomains": {},
+        "priorThreadLink": null
+      },
+      "facts": {
+        "source": { "messageId": "applysim-welcome-chat", "threadId": "applysim-welcome-chat", "fromAddress": "careers@mydrove.com", "fromDomain": "mydrove.com", "fromDisplayName": "Drove Recruiting" },
+        "eventKind": "application_received",
+        "company": { "name": "Drove", "domain": "mydrove.com" },
+        "postingRefs": [{ "roleTitle": "Staff Software Engineer" }],
+        "replyRequested": true,
+        "evidence": [
+          { "field": "subject", "excerpt": "Welcome Chat" },
+          { "field": "body", "excerpt": "Hi Grace Hopper,\n\nThank you for applying to Staff Software Engineer at Drove. We have received your application and our team will review it shortly.\n\nBest,\nDrove Recruiting\nTalent Team" }
+        ]
+      },
+      "record": false,
+      "expected": {
+        "identity": { "companyIds": ["Drove"], "basis": "mention", "confidence": 0.6 },
+        "resolution": "ambiguous",
+        "automaticEligible": false,
+        "clarifiable": false,
+        "preferredApplication": "drove_staff",
+        "resolvedApplication": null,
+        "resolvedBasis": null,
+        "candidateOrder": [
+          ["drove_staff", "body_role_title"],
+          ["drove_staff", "company_and_role"],
+          ["drove_staff", "company_mention"],
+          ["drove_design", "company_mention"]
+        ],
+        "learnedRows": []
+      }
+    },
+    {
+      "name": "applysim_reference_only_single_open",
+      "store": {
+        "activityAt": "2026-09-01T20:00:00.000Z",
+        "applications": [
+          { "key": "drove_staff", "company": "Drove", "role": "Staff Software Engineer", "status": "applied" }
+        ],
+        "companyDomains": {},
+        "priorThreadLink": null
+      },
+      "facts": {
+        "source": { "messageId": "applysim-reference-only", "threadId": "applysim-reference-only", "fromAddress": "careers@mydrove.com", "fromDomain": "mydrove.com", "fromDisplayName": "Drove Recruiting" },
+        "eventKind": "application_received",
+        "company": { "name": "Drove", "domain": "mydrove.com" },
+        "postingRefs": [],
+        "applicationRefs": [{ "namespace": "bracket_code", "value": "DRV-A1B2C3D4E5" }],
+        "replyRequested": true,
+        "evidence": [
+          { "field": "subject", "excerpt": "[DRV-A1B2C3D4E5]" },
+          { "field": "body", "excerpt": "Hi Grace Hopper,\n\nWe received your application and will be in touch with an update soon.\n\nBest,\nDrove Recruiting\nTalent Team" }
+        ]
+      },
+      "record": false,
+      "expected": {
+        "identity": { "companyIds": ["Drove"], "basis": "mention", "confidence": 0.6 },
+        "resolution": "linked",
+        "automaticEligible": false,
+        "clarifiable": false,
+        "preferredApplication": null,
+        "resolvedApplication": "drove_staff",
+        "resolvedBasis": "company_single_open",
+        "candidateOrder": [
+          ["drove_staff", "company_single_open"],
+          ["drove_staff", "company_mention"]
+        ],
+        "learnedRows": [],
+        "externalIdentifierRows": []
+      }
+    },
+    {
+      "name": "unrelated_newsletter_from_applied_company",
+      "store": {
+        "activityAt": "2026-09-01T20:00:00.000Z",
+        "applications": [
+          { "key": "platform", "company": "Acme Robotics", "role": "Platform Engineer", "status": "applied" }
+        ],
+        "companyDomains": { "Acme Robotics": "acme-robotics.com" },
+        "priorThreadLink": null
+      },
+      "facts": {
+        "source": { "messageId": "newsletter", "threadId": "newsletter", "fromAddress": "news@acme-robotics.com", "fromDomain": "acme-robotics.com", "fromDisplayName": "Acme Robotics News" },
+        "eventKind": "unknown",
+        "company": { "name": "Acme Robotics", "domain": "acme-robotics.com" },
+        "postingRefs": [],
+        "replyRequested": false,
+        "evidence": [
+          { "field": "subject", "excerpt": "September robotics newsletter" },
+          { "field": "body", "excerpt": "See our latest product announcements." }
+        ]
+      },
+      "record": false,
+      "expected": {
+        "identity": { "companyIds": ["Acme Robotics"], "basis": "domain", "confidence": 0.75 },
+        "resolution": "unmatched",
+        "automaticEligible": false,
+        "clarifiable": false,
+        "preferredApplication": null,
+        "resolvedApplication": null,
+        "resolvedBasis": null,
+        "candidateOrder": [],
+        "learnedRows": []
+      }
+    }
+  ]
+}

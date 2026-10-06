@@ -1,0 +1,23 @@
+{
+  "jobs": [
+    {
+      "id": 71001,
+      "title": "FPGA Engineer",
+      "absolute_url": "https://job-boards.greenhouse.io/example/jobs/71001",
+      "location": {"name": "Austin, TX"},
+      "updated_at": "2026-07-16T08:30:00-05:00",
+      "first_published": "2026-07-10T14:00:00Z",
+      "company_name": "Example Hardware",
+      "content": "&lt;h2&gt;The role&lt;/h2&gt;&lt;p&gt;Design &amp;amp; verify FPGA systems.&lt;/p&gt;&lt;script&gt;do-not-run()&lt;/script&gt;",
+      "internal_job_id": 9901,
+      "requisition_id": "HW-71001",
+      "departments": [{"id": 12, "name": "Hardware", "child_ids": [], "parent_id": null}],
+      "offices": [{"id": 4, "name": "Austin", "child_ids": [], "parent_id": null}],
+      "metadata": null,
+      "data_compliance": [],
+      "education": null,
+      "language": "en"
+    }
+  ],
+  "meta": {"total": 1}
+}

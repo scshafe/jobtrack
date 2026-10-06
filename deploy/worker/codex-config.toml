@@ -1,0 +1,14 @@
+# Codex settings for the jobtrack-worker container's fabric workers
+# (Dockerfile.worker). scripts/fabric-worker-service.sh copies this file to
+# $CODEX_HOME/config.toml at every start, so a merge changes it and nothing
+# else in CODEX_HOME does; auth.json there is the owner's login.
+#
+# Matches what the Mac mini's workers inherited from the owner's
+# ~/.codex/config.toml on 2026-10-03 (model, reasoning effort, service tier).
+# Deliberately absent: projects, plugins, MCP servers, the notify hook and
+# desktop features. Workers get only their brief, the store and the public
+# web (docs/move-write-side-to-lubuntu.md). The dispatcher still passes the
+# model per turn (-m); lib/fabric-dispatch.js DEFAULT_MODELS.codex.
+model = "gpt-6-astra"
+model_reasoning_effort = "xhigh"
+service_tier = "default"

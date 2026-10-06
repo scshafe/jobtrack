@@ -1,0 +1,7 @@
+{
+  "contractId": "email-send-request.v1",
+  "note": "requestDigest echoed by email-send-receipt.v1 equals this value.",
+  "rule": "canonical-json(code-unit key sort, recursive) then sha256, bare lowercase hex, no prefix",
+  "canonicalJson": "{\"approval\":{\"approvalId\":\"approval-0001\",\"approvedArtifactContractId\":\"email-reply-draft-proposal.v2\",\"approvedArtifactDigest\":\"a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc\",\"approvedAt\":\"2026-07-19T16:00:00.000Z\",\"approver\":{\"id\":\"owner@example.test\",\"kind\":\"human\"},\"schemaVersion\":\"approval-receipt.v1\",\"scope\":{\"action\":\"send-once\",\"recipient\":\"recruiter@example.test\",\"threadId\":\"thread-1\"}},\"content\":{\"contractId\":\"email-reply-draft-proposal.v2\",\"digest\":\"a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc\",\"mode\":\"draft_artifact\"},\"idempotencyKey\":\"send-message-1-draft-0001\",\"inReplyTo\":\"<message-1@example.test>\",\"recipient\":\"recruiter@example.test\",\"requestId\":\"send-req-0001\",\"schemaVersion\":\"email-send-request.v1\",\"threadId\":\"thread-1\"}",
+  "digest": "d67708ee6ea158efb7763a6ff552d8c692e45f9ca15c7666ee5cc8c209e6ca0a"
+}

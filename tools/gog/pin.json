@@ -1,0 +1,26 @@
+{
+  "schema": "jobtrack-pinned-gog.v3",
+  "upstreamRepository": "https://github.com/steipete/gogcli.git",
+  "upstreamCommit": "22d197c5c40e3b6482dff4e8c7be68e29239b05c",
+  "upstreamVersion": "v0.27.1",
+  "patchFile": "tools/gog/single-attempt.patch",
+  "patchSha256": "da3be883f190f1fdd69e05200dcc67ba3d132cbe6e5d55bf91459821a4355665",
+  "scopedAuthPatchFile": "tools/gog/scoped-auth.patch",
+  "scopedAuthPatchSha256": "ee97ce6c875954fb51f44ae2dcc0689199e8393104fe2ed96b95b8440a233e94",
+  "noninteractivePatchFile": "tools/gog/noninteractive-keychain.patch",
+  "noninteractivePatchSha256": "f031bbee4a7c72c1ff3fe5aee769627bd96ce69c0e85ac6af9a666417bbaa653",
+  "build": {
+    "goVersion": "go1.26.2",
+    "cgoEnabled": "1",
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.3.2)",
+    "sdkVersion": "26.2",
+    "ldflags": "-X github.com/steipete/gogcli/internal/cmd.version=v0.27.1-jobtrack-single-attempt-v3 -X github.com/steipete/gogcli/internal/cmd.commit=22d197c5c40e3b6482dff4e8c7be68e29239b05c -X github.com/steipete/gogcli/internal/cmd.date=2026-09-08T00:00:00Z"
+  },
+  "artifacts": {
+    "darwin-arm64": {
+      "relativePath": ".tools/gog/jobtrack-single-attempt-v3-darwin-arm64/gog",
+      "sha256": "d2fed1e9a561be788c9b55d40be8c1267f093fe559942d6c8734cea4d3130e30",
+      "cdhash": "53d5aabb3c49523d1534762f90e67191b6161777"
+    }
+  }
+}

@@ -1,0 +1,79 @@
+name: jobtrack-discovery-sandbox
+
+services:
+  broker:
+    build:
+      context: ./discovery-sandbox
+      dockerfile: Dockerfile.broker
+    user: "65532:65532"
+    init: true
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 0.50
+    ulimits:
+      nofile:
+        soft: 256
+        hard: 256
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m,mode=1777
+    configs:
+      - source: discovery_policy
+        target: /run/config/discovery-policy.json
+    networks:
+      - discovery_internal
+      - discovery_egress
+    expose:
+      - "8787"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('http').get('http://127.0.0.1:8787/healthz',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+  worker:
+    profiles:
+      - worker
+    build:
+      context: ./discovery-sandbox
+      dockerfile: Dockerfile.worker
+    user: "65532:65532"
+    init: true
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 0.50
+    ulimits:
+      nofile:
+        soft: 128
+        hard: 128
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m,mode=1777
+    networks:
+      - discovery_internal
+    stdin_open: true
+    depends_on:
+      broker:
+        condition: service_healthy
+
+configs:
+  discovery_policy:
+    file: ./discovery-sandbox/config/fail-closed-policy.json
+
+networks:
+  discovery_internal:
+    internal: true
+  discovery_egress: {}

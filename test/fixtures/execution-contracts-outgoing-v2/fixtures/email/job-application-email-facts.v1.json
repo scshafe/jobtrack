@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "job-application-email-facts.v1",
+  "trust": "untrusted_external",
+  "source": {
+    "provider": "gmail",
+    "accountId": "jobs@example.test",
+    "messageId": "message-1",
+    "threadId": "thread-1",
+    "receivedAt": "2026-07-18T02:00:00.000Z",
+    "fromAddress": "recruiter@example.test",
+    "fromDomain": "example.test",
+    "contentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "contentCompleteness": "sanitized_plain_text",
+  "eventKind": "action_required",
+  "postingRefs": [],
+  "applicationRefs": [],
+  "replyRequested": false,
+  "evidence": [
+    {
+      "field": "from",
+      "excerpt": "recruiter@example.test"
+    },
+    {
+      "field": "subject",
+      "excerpt": "Application communication"
+    }
+  ],
+  "extraction": {
+    "provider": "inbox-pipeline",
+    "version": "jobtrack-relay.v2",
+    "confidence": 0.87
+  },
+  "security": {
+    "risk": "medium",
+    "requiresReview": true
+  }
+}

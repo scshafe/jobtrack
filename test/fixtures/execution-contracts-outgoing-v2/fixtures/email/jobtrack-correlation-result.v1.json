@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "jobtrack-correlation-result.v1",
+  "source": {
+    "provider": "gmail",
+    "accountId": "jobs@example.test",
+    "messageId": "message-1",
+    "threadId": "thread-1"
+  },
+  "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+  "resolution": "unmatched",
+  "candidates": [],
+  "evidence": [
+    {
+      "kind": "from_domain",
+      "value": "example.test"
+    }
+  ],
+  "automaticEligible": false
+}

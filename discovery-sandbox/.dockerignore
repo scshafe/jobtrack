@@ -1,0 +1,11 @@
+*
+!bounded-io.js
+!contracts.js
+!built-in-parsers.js
+!network-policy.js
+!egress-broker.js
+!broker-cli.js
+!controller.js
+!strategy-worker.js
+!Dockerfile.broker
+!Dockerfile.worker

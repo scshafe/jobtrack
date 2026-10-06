@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- The standing fabric heartbeat (FABRIC_PLAN Phase E): an hourly
+       `fabric tick` against the REAL store plus a refresh of the operator
+       queue at ~/.jobtrack/fabric/queue.md. Every gate defaults to human,
+       so the tick only performs safe deterministic work; nothing outward
+       can fire without a human-set constrained revision. Install:
+         cp deploy/launchd/com.cole.jobtrack-fabric.plist ~/Library/LaunchAgents/
+         launchctl load ~/Library/LaunchAgents/com.cole.jobtrack-fabric.plist -->
+  <key>Label</key>
+  <string>com.cole.jobtrack-fabric</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/sh</string>
+    <string>/Users/cole/.mission-control/projects/jobtrack/scripts/fabric-cron.sh</string>
+  </array>
+  <key>StartInterval</key>
+  <integer>3600</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/Users/cole/.jobtrack/fabric/cron.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/cole/.jobtrack/fabric/cron.log</string>
+</dict>
+</plist>

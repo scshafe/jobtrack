@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "environment-descriptor.v1",
+  "network": "none",
+  "capabilities": [
+    "os:automation",
+    "network:mail-egress",
+    "mail:send"
+  ],
+  "mounts": [],
+  "secretRefs": [],
+  "io": {
+    "inputContract": "email-send-request.v1",
+    "outputContract": "email-send-receipt.v1"
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/email-send-receipt.v2.schema.json",
+  "title": "Provider-neutral content-equivalent email send receipt v2",
+  "description": "Append-only, native-host-signed outcome for email-send-request.v2. It echoes all immutable send bindings, binds operation-journal and provider evidence, and maps the closed outcomes deterministically: sent/duplicate to applied, conclusive failed to unapplied, and indeterminate to indeterminate. Duplicate binds the canonical digest of a prior independently verified original sent/applied receipt. A known failure is terminal for this reviewed request; retry requires a newly reviewed request, approval, and idempotency key. An indeterminate outcome is reconcile_only and consumers must query durable provider/local evidence before any new authority can be minted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "normalizationVersion",
+    "receiptId",
+    "attemptId",
+    "requestId",
+    "idempotencyKey",
+    "requestDigest",
+    "generationId",
+    "manifestDigest",
+    "provider",
+    "accountId",
+    "recipient",
+    "threadId",
+    "contentDigest",
+    "sendFidelity",
+    "outcome",
+    "classification",
+    "operationJournalEvidenceDigest",
+    "providerEvidenceDigest",
+    "nativeAttestation",
+    "observedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "email-send-receipt.v2" },
+    "normalizationVersion": { "const": "email-text-nfc-lf.v1" },
+    "receiptId": { "$ref": "#/$defs/identifier" },
+    "attemptId": { "$ref": "#/$defs/identifier" },
+    "requestId": { "$ref": "#/$defs/identifier" },
+    "idempotencyKey": { "$ref": "#/$defs/idempotencyKey" },
+    "requestDigest": { "$ref": "#/$defs/sha256" },
+    "generationId": { "$ref": "#/$defs/identifier" },
+    "manifestDigest": { "$ref": "#/$defs/sha256" },
+    "provider": { "$ref": "#/$defs/providerCode" },
+    "accountId": { "$ref": "#/$defs/accountId" },
+    "recipient": { "$ref": "#/$defs/emailAddress" },
+    "threadId": { "$ref": "#/$defs/threadId" },
+    "contentDigest": { "$ref": "#/$defs/sha256" },
+    "sendFidelity": { "const": "content_equivalent" },
+    "outcome": { "enum": ["sent", "duplicate", "failed", "indeterminate"] },
+    "classification": {
+      "description": "Deterministic effect classification. sent/duplicate are applied, conclusive failed is unapplied, and unresolved indeterminate remains indeterminate.",
+      "enum": ["applied", "unapplied", "indeterminate"]
+    },
+    "operationJournalEvidenceDigest": {
+      "description": "Digest of the immutable native operation-journal record for this exact attempt and request.",
+      "$ref": "#/$defs/sha256"
+    },
+    "providerEvidenceDigest": {
+      "description": "Digest of the durable provider/local evidence consulted for this classification.",
+      "$ref": "#/$defs/sha256"
+    },
+    "providerDraftId": { "$ref": "#/$defs/providerId" },
+    "providerMessageId": { "$ref": "#/$defs/providerId" },
+    "providerThreadId": { "$ref": "#/$defs/providerId" },
+    "duplicateOfReceiptId": { "$ref": "#/$defs/identifier" },
+    "priorAppliedReceiptDigest": {
+      "description": "For duplicate only: canonical digest of the independently verified original sent/applied receipt with identical immutable bindings.",
+      "$ref": "#/$defs/sha256"
+    },
+    "nonSendEvidence": {
+      "description": "Required only for failed/unapplied. It identifies conclusive durable proof that this attempt did not send.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "conclusive", "digest"],
+      "properties": {
+        "kind": { "enum": ["terminal_pre_effect", "provider_declared_non_send"] },
+        "conclusive": { "const": true },
+        "digest": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "retryDisposition"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "^[a-z][a-z0-9._-]{0,99}$" },
+        "message": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "retryDisposition": { "enum": ["terminal", "reconcile_only"] }
+      }
+    },
+    "nativeAttestation": {
+      "description": "Required signed native-host receipt. Ed25519 signs the UTF-8 bytes of package-canonical JSON after removing this complete nativeAttestation property. payloadDigest hashes those same canonical bytes; keyId resolves only through the pinned native-host key registry.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "keyId", "payloadDigest", "signatureEncoding", "signature"],
+      "properties": {
+        "algorithm": { "const": "Ed25519" },
+        "keyId": { "$ref": "#/$defs/keyId" },
+        "payloadDigest": { "$ref": "#/$defs/sha256" },
+        "signatureEncoding": { "const": "base64" },
+        "signature": {
+          "description": "Canonical padded base64 encoding of the 64-byte Ed25519 signature.",
+          "type": "string",
+          "minLength": 88,
+          "maxLength": 88,
+          "pattern": "^[A-Za-z0-9+/]{86}==$"
+        }
+      }
+    },
+    "observedAt": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "outcome": { "const": "sent" } }, "required": ["outcome"] },
+      "then": {
+        "required": ["providerMessageId"],
+        "properties": { "classification": { "const": "applied" } },
+        "not": {
+          "anyOf": [
+            { "required": ["failure"] },
+            { "required": ["duplicateOfReceiptId"] },
+            { "required": ["priorAppliedReceiptDigest"] },
+            { "required": ["nonSendEvidence"] }
+          ]
+        }
+      }
+    },
+    {
+      "if": { "properties": { "outcome": { "const": "duplicate" } }, "required": ["outcome"] },
+      "then": {
+        "required": ["duplicateOfReceiptId", "priorAppliedReceiptDigest", "providerMessageId"],
+        "properties": { "classification": { "const": "applied" } },
+        "not": { "anyOf": [{ "required": ["failure"] }, { "required": ["nonSendEvidence"] }] }
+      }
+    },
+    {
+      "if": { "properties": { "outcome": { "const": "failed" } }, "required": ["outcome"] },
+      "then": {
+        "required": ["failure", "nonSendEvidence"],
+        "properties": {
+          "classification": { "const": "unapplied" },
+          "failure": {
+            "properties": { "retryDisposition": { "const": "terminal" } }
+          }
+        },
+        "not": {
+          "anyOf": [
+            { "required": ["providerMessageId"] },
+            { "required": ["duplicateOfReceiptId"] },
+            { "required": ["priorAppliedReceiptDigest"] }
+          ]
+        }
+      }
+    },
+    {
+      "if": { "properties": { "outcome": { "const": "indeterminate" } }, "required": ["outcome"] },
+      "then": {
+        "required": ["failure"],
+        "properties": {
+          "classification": { "const": "indeterminate" },
+          "failure": {
+            "properties": { "retryDisposition": { "const": "reconcile_only" } }
+          }
+        },
+        "not": {
+          "anyOf": [
+            { "required": ["providerMessageId"] },
+            { "required": ["duplicateOfReceiptId"] },
+            { "required": ["priorAppliedReceiptDigest"] },
+            { "required": ["nonSendEvidence"] }
+          ]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "keyId": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$" },
+    "idempotencyKey": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$" },
+    "providerCode": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z][a-z0-9._-]{0,63}$" },
+    "accountId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" },
+    "emailAddress": { "type": "string", "format": "email", "maxLength": 320 },
+    "threadId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" },
+    "providerId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" }
+  }
+}

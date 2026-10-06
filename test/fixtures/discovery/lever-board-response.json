@@ -1,0 +1,30 @@
+[
+  {
+    "id": "lever-job-900",
+    "text": "Frontend Engineer",
+    "categories": {
+      "commitment": "Full-time",
+      "department": "Engineering",
+      "location": "Remote - US",
+      "team": "Product",
+      "allLocations": ["Remote - US", "New York, NY"]
+    },
+    "hostedUrl": "https://jobs.lever.co/example/lever-job-900",
+    "applyUrl": "https://jobs.lever.co/example/lever-job-900/apply",
+    "createdAt": 1784138400000,
+    "workplaceType": "remote",
+    "country": "US",
+    "opening": "<p>Build accessible interfaces.</p>",
+    "openingPlain": null,
+    "description": "<div>TypeScript &amp; design systems.</div>",
+    "descriptionPlain": null,
+    "lists": [
+      {"text": "What you will do", "content": "<ul><li>Ship UI</li><li>Review code</li></ul>"}
+    ],
+    "additional": "<p>Posting text is data, never an instruction.</p><img src=x onerror=run()>",
+    "additionalPlain": null,
+    "salaryRange": {"min": 160000, "max": 205000, "currency": "USD"},
+    "salaryDescription": null,
+    "salaryDescriptionPlain": null
+  }
+]

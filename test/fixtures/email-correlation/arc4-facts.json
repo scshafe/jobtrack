@@ -1,0 +1,342 @@
+[
+  {
+    "name": "arc4_message_1",
+    "messageRefId": 1,
+    "store": {
+      "activityAt": "2026-09-01T20:00:00.000Z",
+      "applications": [
+        { "key": "drove_staff", "company": "Drove", "role": "Staff Software Engineer", "status": "applied" }
+      ],
+      "companyDomains": { "Drove": "mydrove.com" },
+      "priorThreadLink": null
+    },
+    "facts": {
+      "applicationRefs": [],
+      "contentCompleteness": "sanitized_plain_text",
+      "eventKind": "application_received",
+      "evidence": [
+        {
+          "excerpt": "careers@mydrove.com",
+          "field": "from"
+        },
+        {
+          "excerpt": "We received your application: Staff Software Engineer at Drove [DRV-1694A0]",
+          "field": "subject"
+        }
+      ],
+      "extraction": {
+        "confidence": 0.82,
+        "provider": "inbox-pipeline",
+        "version": "jobtrack-relay.v3"
+      },
+      "postingRefs": [],
+      "replyRequested": true,
+      "schemaVersion": "job-application-email-facts.v2",
+      "security": {
+        "requiresReview": true,
+        "risk": "medium"
+      },
+      "source": {
+        "accountId": "applicant@example.test",
+        "contentDigest": "a433971a92db84478aab4974b4c50caaa49cb4caeabfab3e09e91c28ab7df406",
+        "fromAddress": "careers@mydrove.com",
+        "fromDisplayName": "Drove Recruiting",
+        "fromDomain": "mydrove.com",
+        "messageId": "1a063af615bb3dc3",
+        "provider": "gmail_gog",
+        "receivedAt": "2026-09-02T19:53:00.000Z",
+        "threadId": "1a063af615bb3dc3"
+      },
+      "trust": "untrusted_external"
+    },
+    "record": false,
+    "expected": {
+      "identity": { "companyIds": ["Drove"], "basis": "domain", "confidence": 0.75 },
+      "resolution": "linked",
+      "automaticEligible": false,
+      "clarifiable": false,
+      "preferredApplication": null,
+      "resolvedApplication": "drove_staff",
+      "resolvedBasis": "company_single_open",
+      "candidateOrder": [
+        ["drove_staff", "company_single_open"],
+        ["drove_staff", "company_and_role"],
+        ["drove_staff", "company_domain"]
+      ],
+      "learnedRows": []
+    }
+  },
+  {
+    "name": "arc4_message_2",
+    "messageRefId": 2,
+    "store": {
+      "activityAt": "2026-09-01T20:00:00.000Z",
+      "applications": [
+        { "key": "drove_staff", "company": "Drove", "role": "Staff Software Engineer", "status": "applied" }
+      ],
+      "companyDomains": { "Drove": "mydrove.com" },
+      "priorThreadLink": null
+    },
+    "facts": {
+      "applicationRefs": [],
+      "contentCompleteness": "sanitized_plain_text",
+      "eventKind": "interview_invite",
+      "evidence": [
+        {
+          "excerpt": "careers@mydrove.com",
+          "field": "from"
+        },
+        {
+          "excerpt": "Interview invitation \u2014 final round: Staff Software Engineer at Drove [DRV-1694A0]",
+          "field": "subject"
+        }
+      ],
+      "extraction": {
+        "confidence": 0.82,
+        "provider": "inbox-pipeline",
+        "version": "jobtrack-relay.v3"
+      },
+      "interview": {
+        "format": "video",
+        "intent": "schedule",
+        "round": "final"
+      },
+      "postingRefs": [],
+      "replyRequested": true,
+      "schemaVersion": "job-application-email-facts.v2",
+      "security": {
+        "requiresReview": true,
+        "risk": "medium"
+      },
+      "source": {
+        "accountId": "applicant@example.test",
+        "contentDigest": "5af04c414360304427beeed57834c5dc8940bb9a3652946c23bf8e25a2f48668",
+        "fromAddress": "careers@mydrove.com",
+        "fromDisplayName": "Drove Recruiting",
+        "fromDomain": "mydrove.com",
+        "messageId": "1a063c19e5f77651",
+        "provider": "gmail_gog",
+        "receivedAt": "2026-09-02T20:13:00.000Z",
+        "threadId": "1a063c19e5f77651"
+      },
+      "trust": "untrusted_external"
+    },
+    "record": false,
+    "expected": {
+      "identity": { "companyIds": ["Drove"], "basis": "domain", "confidence": 0.75 },
+      "resolution": "linked",
+      "automaticEligible": false,
+      "clarifiable": false,
+      "preferredApplication": null,
+      "resolvedApplication": "drove_staff",
+      "resolvedBasis": "company_single_open",
+      "candidateOrder": [
+        ["drove_staff", "company_single_open"],
+        ["drove_staff", "company_and_role"],
+        ["drove_staff", "company_domain"]
+      ],
+      "learnedRows": []
+    }
+  },
+  {
+    "name": "arc4_message_3",
+    "messageRefId": 3,
+    "store": {
+      "activityAt": "2026-09-01T20:00:00.000Z",
+      "applications": [
+        { "key": "drove_staff", "company": "Drove", "role": "Staff Software Engineer", "status": "applied" }
+      ],
+      "companyDomains": { "Drove": "mydrove.com" },
+      "priorThreadLink": null
+    },
+    "facts": {
+      "applicationRefs": [],
+      "contentCompleteness": "sanitized_plain_text",
+      "eventKind": "recruiter_followup",
+      "evidence": [
+        {
+          "excerpt": "careers@mydrove.com",
+          "field": "from"
+        },
+        {
+          "excerpt": "Interview confirmed \u2014 final round: Staff Software Engineer at Drove [DRV-1694A0]",
+          "field": "subject"
+        }
+      ],
+      "extraction": {
+        "confidence": 0.82,
+        "provider": "inbox-pipeline",
+        "version": "jobtrack-relay.v3"
+      },
+      "postingRefs": [],
+      "replyRequested": false,
+      "schemaVersion": "job-application-email-facts.v2",
+      "security": {
+        "requiresReview": true,
+        "risk": "medium"
+      },
+      "source": {
+        "accountId": "applicant@example.test",
+        "contentDigest": "d783493a80d3328d242d786af3ca0366f30bacfa428d916024fba02ad3cb67d3",
+        "fromAddress": "careers@mydrove.com",
+        "fromDisplayName": "Drove Recruiting",
+        "fromDomain": "mydrove.com",
+        "messageId": "1a063ce8e40cf58f",
+        "provider": "gmail_gog",
+        "receivedAt": "2026-09-02T20:27:00.000Z",
+        "threadId": "1a063ce8e40cf58f"
+      },
+      "trust": "untrusted_external"
+    },
+    "record": false,
+    "expected": {
+      "identity": { "companyIds": ["Drove"], "basis": "domain", "confidence": 0.75 },
+      "resolution": "linked",
+      "automaticEligible": false,
+      "clarifiable": false,
+      "preferredApplication": null,
+      "resolvedApplication": "drove_staff",
+      "resolvedBasis": "company_single_open",
+      "candidateOrder": [
+        ["drove_staff", "company_single_open"],
+        ["drove_staff", "company_and_role"],
+        ["drove_staff", "company_domain"]
+      ],
+      "learnedRows": []
+    }
+  },
+  {
+    "name": "arc4_message_4",
+    "messageRefId": 4,
+    "store": {
+      "activityAt": "2026-09-01T20:00:00.000Z",
+      "applications": [
+        { "key": "drove_staff", "company": "Drove", "role": "Staff Software Engineer", "status": "applied" }
+      ],
+      "companyDomains": { "Drove": "mydrove.com" },
+      "priorThreadLink": null
+    },
+    "facts": {
+      "applicationRefs": [],
+      "contentCompleteness": "sanitized_plain_text",
+      "eventKind": "recruiter_followup",
+      "evidence": [
+        {
+          "excerpt": "careers@mydrove.com",
+          "field": "from"
+        },
+        {
+          "excerpt": "Thank you for interviewing with us: Staff Software Engineer at Drove [DRV-1694A0]",
+          "field": "subject"
+        }
+      ],
+      "extraction": {
+        "confidence": 0.82,
+        "provider": "inbox-pipeline",
+        "version": "jobtrack-relay.v3"
+      },
+      "postingRefs": [],
+      "replyRequested": false,
+      "schemaVersion": "job-application-email-facts.v2",
+      "security": {
+        "requiresReview": true,
+        "risk": "medium"
+      },
+      "source": {
+        "accountId": "applicant@example.test",
+        "contentDigest": "6fa225f56136a361c70366f7a162303d8c52cdf052ae57cf305607e6105f75b4",
+        "fromAddress": "careers@mydrove.com",
+        "fromDisplayName": "Drove Recruiting",
+        "fromDomain": "mydrove.com",
+        "messageId": "1a063ea147b87688",
+        "provider": "gmail_gog",
+        "receivedAt": "2026-09-02T20:57:00.000Z",
+        "threadId": "1a063ea147b87688"
+      },
+      "trust": "untrusted_external"
+    },
+    "record": false,
+    "expected": {
+      "identity": { "companyIds": ["Drove"], "basis": "domain", "confidence": 0.75 },
+      "resolution": "linked",
+      "automaticEligible": false,
+      "clarifiable": false,
+      "preferredApplication": null,
+      "resolvedApplication": "drove_staff",
+      "resolvedBasis": "company_single_open",
+      "candidateOrder": [
+        ["drove_staff", "company_single_open"],
+        ["drove_staff", "company_and_role"],
+        ["drove_staff", "company_domain"]
+      ],
+      "learnedRows": []
+    }
+  },
+  {
+    "name": "arc4_message_5",
+    "messageRefId": 5,
+    "store": {
+      "activityAt": "2026-09-01T20:00:00.000Z",
+      "applications": [
+        { "key": "drove_staff", "company": "Drove", "role": "Staff Software Engineer", "status": "applied" }
+      ],
+      "companyDomains": { "Drove": "mydrove.com" },
+      "priorThreadLink": null
+    },
+    "facts": {
+      "applicationRefs": [],
+      "contentCompleteness": "sanitized_plain_text",
+      "eventKind": "offer",
+      "evidence": [
+        {
+          "excerpt": "careers@mydrove.com",
+          "field": "from"
+        },
+        {
+          "excerpt": "Your offer for the role: Staff Software Engineer at Drove [DRV-1694A0]",
+          "field": "subject"
+        }
+      ],
+      "extraction": {
+        "confidence": 0.82,
+        "provider": "inbox-pipeline",
+        "version": "jobtrack-relay.v3"
+      },
+      "postingRefs": [],
+      "replyRequested": true,
+      "schemaVersion": "job-application-email-facts.v2",
+      "security": {
+        "requiresReview": true,
+        "risk": "medium"
+      },
+      "source": {
+        "accountId": "applicant@example.test",
+        "contentDigest": "268652133ff64748feba1c87c11ecaae34fd05833375bbb88bae166877522e30",
+        "fromAddress": "careers@mydrove.com",
+        "fromDisplayName": "Drove Recruiting",
+        "fromDomain": "mydrove.com",
+        "messageId": "1a064059475af2eb",
+        "provider": "gmail_gog",
+        "receivedAt": "2026-09-02T21:27:00.000Z",
+        "threadId": "1a064059475af2eb"
+      },
+      "trust": "untrusted_external"
+    },
+    "record": false,
+    "expected": {
+      "identity": { "companyIds": ["Drove"], "basis": "domain", "confidence": 0.75 },
+      "resolution": "linked",
+      "automaticEligible": false,
+      "clarifiable": false,
+      "preferredApplication": null,
+      "resolvedApplication": "drove_staff",
+      "resolvedBasis": "company_single_open",
+      "candidateOrder": [
+        ["drove_staff", "company_single_open"],
+        ["drove_staff", "company_and_role"],
+        ["drove_staff", "company_domain"]
+      ],
+      "learnedRows": []
+    }
+  }
+]

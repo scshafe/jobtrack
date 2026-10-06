@@ -1,0 +1,81 @@
+{
+  "schemaName": "draft-provenance-receipt.v1",
+  "description": "PUBLISHED negative cases for draft-provenance-receipt.v1. Every value MUST be REJECTED by the FROZEN JSON Schema, including cases that reject only because the EMBEDDED usage-receipt.v1 ($ref across files) violates its own allOf. Used by the cross-repo gate against each consumer's vendored copy (which must vendor usage-receipt.v1 too for the cross-file $ref to resolve).",
+  "cases": [
+    {
+      "name": "wrong schemaVersion const",
+      "reason": "schemaVersion const draft-provenance-receipt.v1",
+      "value": {
+        "schemaVersion": "draft-provenance-receipt.v2",
+        "receiptId": "prov-0001",
+        "draftProposalId": "draft-0001",
+        "draftProposalDigest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc",
+        "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "sourceStateSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "generatedBy": { "provider": "local-ubuntu", "version": "draft-reply.v1" },
+        "corpusSources": [{ "kind": "inbox-facts", "digest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5" }],
+        "usage": {
+          "schemaVersion": "usage-receipt.v1",
+          "trust": "provider_reported",
+          "observedInputTokens": 1200,
+          "observedOutputTokens": 340,
+          "chargedTokens": 1540,
+          "observedCostMicroUsd": 4200,
+          "chargedCostMicroUsd": 4200,
+          "durationMs": 5300
+        },
+        "createdAt": "2026-07-19T15:00:00.000Z"
+      }
+    },
+    {
+      "name": "unknown corpusSources kind",
+      "reason": "corpusSources.items.kind enum closed set",
+      "value": {
+        "schemaVersion": "draft-provenance-receipt.v1",
+        "receiptId": "prov-0001",
+        "draftProposalId": "draft-0001",
+        "draftProposalDigest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc",
+        "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "sourceStateSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "generatedBy": { "provider": "local-ubuntu", "version": "draft-reply.v1" },
+        "corpusSources": [{ "kind": "raw-internet", "digest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5" }],
+        "usage": {
+          "schemaVersion": "usage-receipt.v1",
+          "trust": "provider_reported",
+          "observedInputTokens": 1200,
+          "observedOutputTokens": 340,
+          "chargedTokens": 1540,
+          "observedCostMicroUsd": 4200,
+          "chargedCostMicroUsd": 4200,
+          "durationMs": 5300
+        },
+        "createdAt": "2026-07-19T15:00:00.000Z"
+      }
+    },
+    {
+      "name": "embedded usage receipt violates its own allOf (unavailable with observed telemetry)",
+      "reason": "cross-file $ref usage-receipt.v1 allOf if-then",
+      "value": {
+        "schemaVersion": "draft-provenance-receipt.v1",
+        "receiptId": "prov-0001",
+        "draftProposalId": "draft-0001",
+        "draftProposalDigest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc",
+        "factsDigest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "sourceStateSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "generatedBy": { "provider": "local-ubuntu", "version": "draft-reply.v1" },
+        "corpusSources": [{ "kind": "inbox-facts", "digest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5" }],
+        "usage": {
+          "schemaVersion": "usage-receipt.v1",
+          "trust": "unavailable",
+          "observedInputTokens": 5,
+          "observedOutputTokens": null,
+          "chargedTokens": 1,
+          "observedCostMicroUsd": null,
+          "chargedCostMicroUsd": 1,
+          "durationMs": 1
+        },
+        "createdAt": "2026-07-19T15:00:00.000Z"
+      }
+    }
+  ]
+}

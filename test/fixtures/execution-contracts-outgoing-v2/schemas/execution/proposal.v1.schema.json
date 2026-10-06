@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/execution/proposal.v1.schema.json",
+  "title": "Proposal v1 (generic envelope)",
+  "description": "Encodes propose != apply as a type. A Proposal is ALWAYS advisory: `requiresHumanReview` is const true, `automatic` const false, `sideEffect` const none. The `payload` carries a domain artifact by reference (`artifact`) and inline (`payload`); the artifact digest must match the canonical digest of `payload` per CONVENTIONS.md. A Proposal grants no authority and effects nothing on its own.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "artifact",
+    "trust",
+    "requiresHumanReview",
+    "automatic",
+    "sideEffect",
+    "payload"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "proposal.v1" },
+    "artifact": { "$ref": "https://execution-contracts.local/execution/artifact-ref.v1.schema.json" },
+    "trust": { "enum": ["untrusted_external", "model_proposal", "bounded_internal_request"] },
+    "requiresHumanReview": { "const": true },
+    "automatic": { "const": false },
+    "sideEffect": { "const": "none" },
+    "usage": { "$ref": "https://execution-contracts.local/execution/usage-receipt.v1.schema.json" },
+    "payload": {
+      "description": "The proposed domain artifact, inline. Its canonical digest MUST equal `artifact.digest`. Kept opaque here; the domain schema referenced by `artifact.contractId` is the real validator.",
+      "type": "object"
+    }
+  }
+}

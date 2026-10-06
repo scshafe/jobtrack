@@ -1,0 +1,40 @@
+{
+  "name": "jobtrack",
+  "version": "2.0.0",
+  "private": true,
+  "description": "SQLite-backed JobTrack CLI, skill surface, and read-only web view.",
+  "type": "commonjs",
+  "bin": {
+    "jobtrack": "bin/jobtrack.js",
+    "story-tool": "bin/story-tool.js",
+    "jobtrack-fabric-worker": "bin/jobtrack-fabric-worker.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "discover": "node scripts/scan-public-jobs.js",
+    "discovery:broker": "node discovery-sandbox/broker-cli.js",
+    "discovery:worker": "node discovery-sandbox/strategy-worker.js",
+    "test:discovery-sandbox": "node --test test/discovery-contracts.test.js test/discovery-egress.test.js test/discovery-worker.test.js",
+    "latex:image": "docker build --pull=false -t jobtrack-latex-renderer:v0.6.1 -f latex-renderer/Dockerfile latex-renderer",
+    "test:latex-container": "JOBTRACK_RUN_LATEX_CONTAINER_TESTS=1 node --test test/latex-renderer.test.js",
+    "test:containers": "JOBTRACK_RUN_CONTAINER_TESTS=1 JOBTRACK_RUN_LATEX_CONTAINER_TESTS=1 node --test --test-concurrency=1 test/discovery-worker.test.js test/latex-renderer.test.js test/material-templates-v3.test.js test/material-templates-v4.test.js test/resume-editorial-container.test.js",
+    "verify:migration-v06": "node scripts/verify-v06-migration.js",
+    "test": "node --test",
+    "smoke": "node bin/jobtrack.js --help"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "express": "^5.1.0",
+    "jsdom": "^29.1.1",
+    "latex.js": "^0.12.6"
+  },
+  "devDependencies": {
+    "mission-pipeline": "file:vendor/mission-pipeline"
+  },
+  "overrides": {
+    "mission-pipeline": "file:vendor/mission-pipeline"
+  }
+}

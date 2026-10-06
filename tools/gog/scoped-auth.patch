@@ -1,0 +1,199 @@
+diff --git a/internal/cmd/auth.go b/internal/cmd/auth.go
+index ffb1f81..a7cdc23 100644
+--- a/internal/cmd/auth.go
++++ b/internal/cmd/auth.go
+@@ -95,6 +95,7 @@ type AuthCmd struct {
+ 	Import      AuthImportCmd         `cmd:"" name:"import" help:"Import a required refresh token and optional current access token non-interactively"`
+ 	Services    AuthServicesCmd       `cmd:"" name:"services" help:"List supported auth services and scopes"`
+ 	List        AuthListCmd           `cmd:"" name:"list" help:"List stored accounts"`
++	Inspect     AuthInspectAccountCmd `cmd:"" name:"inspect-account" help:"Inspect one explicit stored account's metadata without enumerating accounts or exporting credentials"`
+ 	Doctor      AuthDoctorCmd         `cmd:"" name:"doctor" help:"Diagnose auth, keyring, and refresh-token issues"`
+ 	Aliases     AuthAliasCmd          `cmd:"" name:"alias" help:"Manage account aliases"`
+ 	Status      AuthStatusCmd         `cmd:"" name:"status" help:"Show auth configuration and keyring backend"`
+diff --git a/internal/cmd/auth_inspect_account.go b/internal/cmd/auth_inspect_account.go
+new file mode 100644
+index 0000000..e1c2251
+--- /dev/null
++++ b/internal/cmd/auth_inspect_account.go
+@@ -0,0 +1,68 @@
++package cmd
++
++import (
++	"context"
++	"errors"
++	"net/mail"
++	"strings"
++
++	"github.com/steipete/gogcli/internal/config"
++	"github.com/steipete/gogcli/internal/outfmt"
++)
++
++// AuthInspectAccountCmd is a JobTrack-specific, read-only metadata boundary.
++// An explicit address and client are required; defaults, account aliases and
++// account enumeration cannot select another credential behind the caller.
++type AuthInspectAccountCmd struct {
++	Email string `arg:"" name:"email" help:"Exact account email (not an alias or auto)"`
++}
++
++type authInspectAccountMetadata struct {
++	SchemaVersion            string   `json:"schemaVersion"`
++	Email                    string   `json:"email"`
++	Client                   string   `json:"client"`
++	Services                 []string `json:"services"`
++	Scopes                   []string `json:"scopes"`
++	Auth                     string   `json:"auth"`
++	CredentialValuesIncluded bool     `json:"credentialValuesIncluded"`
++}
++
++func (c *AuthInspectAccountCmd) Run(ctx context.Context, flags *RootFlags) error {
++	email := normalizeEmail(c.Email)
++	address, err := mail.ParseAddress(email)
++	if err != nil || len(email) > 320 || address.Address != email || flags == nil || strings.TrimSpace(flags.Client) == "" {
++		return usage("inspect-account requires an exact email and explicit --client")
++	}
++	if flags.Account != "" && normalizeEmail(flags.Account) != email {
++		return usage("inspect-account email and --account must match exactly")
++	}
++	client, err := config.NormalizeClientName(flags.Client)
++	if err != nil {
++		return usage("inspect-account requires a valid explicit --client")
++	}
++	store, err := openAuthSecretsStore(ctx)
++	if err != nil {
++		return errors.New("jobtrack: scoped account metadata store unavailable")
++	}
++	reader, ok := store.(tokenNoMigrateGetter)
++	if !ok {
++		// Never fall back to GetToken: it may migrate aliases while reading.
++		return errors.New("jobtrack: scoped non-migrating account inspection unavailable")
++	}
++	tok, err := reader.GetTokenNoMigrate(client, email)
++	if err != nil {
++		return errors.New("jobtrack: scoped stored account unavailable")
++	}
++	if normalizeEmail(tok.Email) != email || tok.Client != client {
++		return errors.New("jobtrack: scoped stored account identity mismatch")
++	}
++	// Copy only the metadata fields explicitly needed for readiness. Never pass
++	// a Token or map derived from its serialization to the output formatter.
++	return outfmt.WriteJSON(ctx, stdoutWriter(ctx), authInspectAccountMetadata{
++		SchemaVersion: "jobtrack-gog-account-metadata.v1",
++		Email:         email, Client: client,
++		Services: append([]string{}, tok.Services...),
++		Scopes:   append([]string{}, tok.Scopes...),
++		Auth:     authTypeOAuth, CredentialValuesIncluded: false,
++	})
++}
+diff --git a/internal/cmd/auth_inspect_account_test.go b/internal/cmd/auth_inspect_account_test.go
+new file mode 100644
+index 0000000..ecb8b53
+--- /dev/null
++++ b/internal/cmd/auth_inspect_account_test.go
+@@ -0,0 +1,107 @@
++package cmd
++
++import (
++	"bytes"
++	"encoding/json"
++	"errors"
++	"io"
++	"reflect"
++	"strings"
++	"testing"
++
++	"github.com/steipete/gogcli/internal/app"
++	"github.com/steipete/gogcli/internal/secrets"
++)
++
++// All other Store methods intentionally panic through the nil embedding: a
++// list, default lookup, migrating read, write or delete must fail this fixture.
++type inspectAccountFixtureStore struct {
++	secrets.Store
++	requested [][2]string
++	token     secrets.Token
++	err       error
++}
++
++func (s *inspectAccountFixtureStore) GetTokenNoMigrate(client, email string) (secrets.Token, error) {
++	s.requested = append(s.requested, [2]string{client, email})
++	return s.token, s.err
++}
++
++func TestJobTrackInspectAccountReadsOnlyExplicitAccountAndEmitsMetadata(t *testing.T) {
++	store := &inspectAccountFixtureStore{token: secrets.Token{
++		Email: "worker@example.com", Client: "default", Services: []string{"gmail"},
++		Scopes:       []string{"https://www.googleapis.com/auth/gmail.send"},
++		RefreshToken: "fixture-secret-refresh", AccessToken: "fixture-secret-access", Subject: "fixture-subject",
++	}}
++	var stdout, stderr bytes.Buffer
++	ctx := withAuthStore(newCmdRuntimeJSONOutputContext(t, &stdout, &stderr), store)
++	if err := (&AuthInspectAccountCmd{Email: "worker@example.com"}).Run(ctx, &RootFlags{Client: "default", Account: "worker@example.com"}); err != nil {
++		t.Fatal(err)
++	}
++	if !reflect.DeepEqual(store.requested, [][2]string{{"default", "worker@example.com"}}) {
++		t.Fatalf("unexpected account reads: %v", store.requested)
++	}
++	var output map[string]any
++	if err := json.Unmarshal(stdout.Bytes(), &output); err != nil {
++		t.Fatal(err)
++	}
++	want := map[string]any{"schemaVersion": "jobtrack-gog-account-metadata.v1", "email": "worker@example.com", "client": "default",
++		"services": []any{"gmail"}, "scopes": []any{"https://www.googleapis.com/auth/gmail.send"}, "auth": "oauth", "credentialValuesIncluded": false}
++	if !reflect.DeepEqual(output, want) {
++		t.Fatal("metadata shape or readiness evidence changed")
++	}
++	if strings.Contains(stdout.String()+stderr.String(), "fixture-secret") || strings.Contains(stdout.String(), "fixture-subject") {
++		t.Fatal("credential or unnecessary identity field reached output")
++	}
++}
++
++func TestJobTrackInspectAccountRejectsImplicitOrConflictingSelectorsBeforeOpeningStore(t *testing.T) {
++	for _, tc := range []struct {
++		email string
++		flags *RootFlags
++	}{
++		{"", &RootFlags{Client: "default"}}, {"auto", &RootFlags{Client: "default"}},
++		{"alias", &RootFlags{Client: "default"}}, {"Name <worker@example.com>", &RootFlags{Client: "default"}},
++		{"worker@example.com", nil}, {"worker@example.com", &RootFlags{}},
++		{"worker@example.com", &RootFlags{Client: "../other"}},
++		{"worker@example.com", &RootFlags{Client: "default", Account: "other@example.com"}},
++	} {
++		ctx := withAuthOperations(newCmdRuntimeJSONOutputContext(t, io.Discard, io.Discard), app.AuthOperations{
++			OpenSecretsStore: func() (secrets.Store, error) { t.Fatal("invalid selection opened credential store"); return nil, nil },
++		})
++		if err := (&AuthInspectAccountCmd{Email: tc.email}).Run(ctx, tc.flags); err == nil {
++			t.Fatal("invalid or conflicting selectors were accepted")
++		}
++	}
++}
++
++func TestJobTrackInspectAccountRefusesFallbackErrorsAndIdentityMismatch(t *testing.T) {
++	for _, store := range []secrets.Store{
++		newMemSecretsStore(), // Implements GetToken, but not GetTokenNoMigrate.
++		&inspectAccountFixtureStore{err: errors.New("fixture-secret-error-must-not-be-exported")},
++		&inspectAccountFixtureStore{token: secrets.Token{Email: "other@example.com", Client: "default"}},
++		&inspectAccountFixtureStore{token: secrets.Token{Email: "worker@example.com", Client: "other"}},
++	} {
++		var stdout, stderr bytes.Buffer
++		ctx := withAuthStore(newCmdRuntimeJSONOutputContext(t, &stdout, &stderr), store)
++		err := (&AuthInspectAccountCmd{Email: "worker@example.com"}).Run(ctx, &RootFlags{Client: "default"})
++		if err == nil || strings.Contains(err.Error(), "fixture-secret") || stdout.Len() != 0 || stderr.Len() != 0 {
++			t.Fatal("inspection did not fail closed without credential output")
++		}
++	}
++}
++
++func TestJobTrackInspectAccountRealCommandRouting(t *testing.T) {
++	store := &inspectAccountFixtureStore{token: secrets.Token{Email: "worker@example.com", Client: "default"}}
++	runtime := runtimeWithAuthStore(store)
++	output := captureStdout(t, func() {
++		_ = captureStderr(t, func() {
++			if err := executeWithRuntime([]string{"--json", "--client=default", "--account=worker@example.com", "auth", "inspect-account", "worker@example.com"}, runtime); err != nil {
++				t.Fatal(err)
++			}
++		})
++	})
++	if len(store.requested) != 1 || !strings.Contains(output, `"schemaVersion": "jobtrack-gog-account-metadata.v1"`) {
++		t.Fatal("real CLI failed to route the scoped inspection")
++	}
++}

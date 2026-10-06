@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/email-send-request.v1.schema.json",
+  "title": "Email send request v1",
+  "description": "NEW. The approved artifact JobTrack emits to the Inbox send edge. v1 (FROZEN): the exact bytes to send are referenced by `content` as a `draft_artifact` digest (a reference to an already-persisted, content-addressed draft; no bytes inline). Inline `rendered_mime` is deferred to v2. Locks `recipient`, carries `inReplyTo`/`threadId`, an `idempotencyKey` (ON CONFLICT DO NOTHING makes retry unable to double-send), and an embedded approval-receipt.v1. The Inbox edge re-verifies: approval.approvedArtifactDigest == content digest; recipient == approval.scope.recipient == the ingested thread's From/Reply-To; then sends exactly, never re-rendering.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "requestId",
+    "idempotencyKey",
+    "recipient",
+    "threadId",
+    "content",
+    "approval"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "email-send-request.v1" },
+    "requestId": { "$ref": "#/$defs/identifier" },
+    "idempotencyKey": {
+      "description": "Stable per-send key. The outbox lane dedupes on this; a retry with the same key cannot double-send.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$"
+    },
+    "recipient": {
+      "description": "Locked recipient. The edge asserts this equals approval.scope.recipient AND the ingested thread's From/Reply-To. Mismatch => fail closed.",
+      "type": "string",
+      "format": "email",
+      "maxLength": 320
+    },
+    "inReplyTo": { "type": "string", "minLength": 1, "maxLength": 998 },
+    "threadId": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "content": {
+      "description": "v1 (FROZEN): draft-artifact digest reference only. The edge re-fetches the already-persisted, content-addressed draft and sends only bytes whose digest equals approval.approvedArtifactDigest. Inline `rendered_mime` is deferred to v2.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "contractId", "digest"],
+      "properties": {
+        "mode": { "const": "draft_artifact" },
+        "contractId": { "$ref": "#/$defs/contractId" },
+        "digest": {
+          "description": "Digest reference to an already-persisted, content-addressed draft artifact; MUST equal approval.approvedArtifactDigest. No bytes inline.",
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "approval": { "$ref": "https://execution-contracts.local/email/approval-receipt.v1.schema.json" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "contractId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9][a-z0-9._-]*\\.v[1-9][0-9]*$"
+    }
+  }
+}

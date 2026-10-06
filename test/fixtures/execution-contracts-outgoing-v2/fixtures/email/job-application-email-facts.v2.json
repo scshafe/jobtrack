@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "job-application-email-facts.v2",
+  "trust": "untrusted_external",
+  "source": {
+    "provider": "apple_mail_emlx",
+    "accountId": "jobs@example.test",
+    "messageId": "apple-message-1",
+    "threadId": "apple-thread-1",
+    "receivedAt": "2026-07-22T18:00:00.000Z",
+    "fromAddress": "recruiter@example.test",
+    "fromDomain": "example.test",
+    "contentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "contentCompleteness": "sanitized_plain_text",
+  "eventKind": "action_required",
+  "postingRefs": [],
+  "applicationRefs": [],
+  "replyRequested": false,
+  "evidence": [
+    {
+      "field": "from",
+      "excerpt": "recruiter@example.test"
+    },
+    {
+      "field": "subject",
+      "excerpt": "Application communication"
+    }
+  ],
+  "extraction": {
+    "provider": "inbox-pipeline",
+    "version": "jobtrack-relay.v3",
+    "confidence": 0.87
+  },
+  "security": {
+    "risk": "medium",
+    "requiresReview": true
+  }
+}

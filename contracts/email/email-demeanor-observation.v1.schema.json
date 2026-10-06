@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jobtrack.local/contracts/email-demeanor-observation.v1.schema.json",
+  "title": "Bounded email demeanor observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "observationId", "source", "factsDigest", "contentDigest",
+    "authorship", "dimensions", "surfaceSignals", "confidence", "evidence",
+    "extraction", "security", "profileEligible"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "email-demeanor-observation.v1" },
+    "observationId": { "$ref": "#/$defs/identifier" },
+    "source": { "$ref": "#/$defs/messageSource" },
+    "factsDigest": { "$ref": "#/$defs/sha256" },
+    "contentDigest": { "$ref": "#/$defs/sha256" },
+    "authorship": { "enum": ["human", "automated", "unknown"] },
+    "dimensions": { "$ref": "#/$defs/dimensions" },
+    "surfaceSignals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["length", "greeting", "closing", "exclamation", "emoji", "contractions"],
+      "properties": {
+        "length": { "enum": ["very_short", "short", "medium", "long", "unknown"] },
+        "greeting": { "enum": ["none", "name", "hi", "hello", "dear", "other", "unknown"] },
+        "closing": { "enum": ["none", "thanks", "best", "regards", "other", "unknown"] },
+        "exclamation": { "enum": ["none", "one", "multiple", "unknown"] },
+        "emoji": { "enum": ["none", "present", "unknown"] },
+        "contractions": { "enum": ["none", "present", "unknown"] }
+      }
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["signal", "factsEvidenceIndex"],
+        "properties": {
+          "signal": {
+            "enum": [
+              "formality", "warmth", "energy", "directness", "verbosity", "length",
+              "greeting", "closing", "exclamation", "emoji", "contractions"
+            ]
+          },
+          "factsEvidenceIndex": { "type": "integer", "minimum": 0, "maximum": 19 }
+        }
+      }
+    },
+    "extraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "version", "policyVersion"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "model": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "policyVersion": { "const": "register-observation.v1" }
+      }
+    },
+    "security": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk", "promptInjectionDetected", "sensitiveTraitInferenceDetected",
+        "personalityInferenceDetected", "requiresReview"
+      ],
+      "properties": {
+        "risk": { "enum": ["low", "medium", "high"] },
+        "promptInjectionDetected": { "type": "boolean" },
+        "sensitiveTraitInferenceDetected": { "type": "boolean" },
+        "personalityInferenceDetected": { "type": "boolean" },
+        "requiresReview": { "type": "boolean" }
+      }
+    },
+    "profileEligible": { "type": "boolean" }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "messageSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "accountId", "messageId", "threadId"],
+      "properties": {
+        "provider": { "enum": ["gmail", "fixture", "manual"] },
+        "accountId": { "type": "string", "minLength": 1, "maxLength": 320 },
+        "messageId": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "threadId": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["formality", "warmth", "energy", "directness", "verbosity"],
+      "properties": {
+        "formality": { "enum": ["casual", "neutral", "formal", "unknown"] },
+        "warmth": { "enum": ["reserved", "neutral", "warm", "unknown"] },
+        "energy": { "enum": ["restrained", "neutral", "upbeat", "unknown"] },
+        "directness": { "enum": ["direct", "balanced", "contextual", "unknown"] },
+        "verbosity": { "enum": ["terse", "concise", "moderate", "unknown"] }
+      }
+    }
+  }
+}

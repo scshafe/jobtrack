@@ -1,0 +1,30 @@
+{
+  "schemaName": "email-send-request.v2",
+  "description": "PUBLISHED negative proving the Apple-capable v2 path rejects the frozen exact-byte v1 contract.",
+  "cases": [
+    {
+      "name": "frozen v1 request is not accepted as v2",
+      "value": {
+        "schemaVersion": "email-send-request.v1",
+        "requestId": "send-req-0001",
+        "idempotencyKey": "send-message-1-draft-0001",
+        "recipient": "recruiter@example.test",
+        "threadId": "thread-1",
+        "content": {
+          "mode": "draft_artifact",
+          "contractId": "email-reply-draft-proposal.v2",
+          "digest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc"
+        },
+        "approval": {
+          "schemaVersion": "approval-receipt.v1",
+          "approvalId": "approval-0001",
+          "approvedArtifactContractId": "email-reply-draft-proposal.v2",
+          "approvedArtifactDigest": "a410824756046f953a9efb8cf49fc502be384ed7f8758df473aa5cfc051184dc",
+          "approver": { "kind": "human", "id": "cole@example.test" },
+          "approvedAt": "2026-07-19T16:00:00.000Z",
+          "scope": { "action": "send-once", "recipient": "recruiter@example.test", "threadId": "thread-1" }
+        }
+      }
+    }
+  ]
+}

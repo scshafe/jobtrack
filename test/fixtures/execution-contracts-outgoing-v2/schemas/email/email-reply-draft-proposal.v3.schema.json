@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://execution-contracts.local/email/email-reply-draft-proposal.v3.schema.json",
+  "title": "Provider-neutral email reply draft proposal v3",
+  "description": "Additive successor to the frozen Gmail-oriented v2 proposal. It preserves proposal-only safety fields while binding the draft to one immutable generation/manifest, provider account, effective recipient, reply thread, and content-equivalent send lane. Consumers additionally enforce email-text-nfc-lf.v1 normalization, bodyDigest == sha256(normalized body), exact normalized recipient equality, template authorship => templateId, and exact projection into email-approved-content.v1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "normalizationVersion",
+    "proposalId",
+    "generationId",
+    "manifestDigest",
+    "factsDigest",
+    "source",
+    "recipient",
+    "subject",
+    "body",
+    "bodyDigest",
+    "purpose",
+    "authorship",
+    "expiresAt",
+    "sensitiveDataScan",
+    "toneDecisionId",
+    "toneDecisionDigest",
+    "voiceRevisionId",
+    "voiceRevisionDigest",
+    "sourceStateSha256",
+    "delivery",
+    "registerAdaptationOnly",
+    "distinctivePhraseReuse",
+    "requiresReview",
+    "autoSendEligible"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "email-reply-draft-proposal.v3" },
+    "normalizationVersion": {
+      "description": "Normative text preparation used before display, comparison, and digest: Unicode NFC for subject, body, addresses, and message references; CRLF/lone-CR to LF for body before NFC.",
+      "const": "email-text-nfc-lf.v1"
+    },
+    "proposalId": { "$ref": "#/$defs/identifier" },
+    "generationId": { "$ref": "#/$defs/identifier" },
+    "manifestDigest": { "$ref": "#/$defs/sha256" },
+    "factsDigest": { "$ref": "#/$defs/sha256" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "accountId",
+        "messageId",
+        "threadId",
+        "replyToAddress",
+        "inReplyTo",
+        "references"
+      ],
+      "properties": {
+        "provider": { "$ref": "#/$defs/providerCode" },
+        "accountId": { "$ref": "#/$defs/accountId" },
+        "messageId": { "$ref": "#/$defs/messageId" },
+        "threadId": { "$ref": "#/$defs/threadId" },
+        "replyToAddress": { "$ref": "#/$defs/emailAddress" },
+        "inReplyTo": { "$ref": "#/$defs/messageReference" },
+        "references": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/messageReference" }
+        }
+      }
+    },
+    "recipient": { "$ref": "#/$defs/emailAddress" },
+    "subject": { "type": "string", "minLength": 1, "maxLength": 998, "pattern": "^[^\\r\\n]+$" },
+    "body": { "type": "string", "minLength": 1, "maxLength": 20000 },
+    "bodyDigest": { "$ref": "#/$defs/sha256" },
+    "purpose": { "enum": ["acknowledgement", "scheduling", "information_response", "follow_up", "other"] },
+    "authorship": { "enum": ["template", "model", "human"] },
+    "templateId": { "$ref": "#/$defs/identifier" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "sensitiveDataScan": { "enum": ["passed", "requires_review"] },
+    "toneDecisionId": { "$ref": "#/$defs/identifier" },
+    "toneDecisionDigest": { "$ref": "#/$defs/sha256" },
+    "styleProfileId": { "$ref": "#/$defs/identifier" },
+    "styleProfileDigest": { "$ref": "#/$defs/sha256" },
+    "voiceRevisionId": { "$ref": "#/$defs/identifier" },
+    "voiceRevisionDigest": { "$ref": "#/$defs/sha256" },
+    "sourceStateSha256": { "$ref": "#/$defs/sha256" },
+    "delivery": {
+      "description": "The target provider account for draft/send effects. This is distinct from source.provider because a reader and sender may use different adapter codes for the same mailbox.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "accountId", "sendFidelity"],
+      "properties": {
+        "provider": { "$ref": "#/$defs/providerCode" },
+        "accountId": { "$ref": "#/$defs/accountId" },
+        "sendFidelity": { "const": "content_equivalent" }
+      }
+    },
+    "registerAdaptationOnly": { "const": true },
+    "distinctivePhraseReuse": { "const": false },
+    "requiresReview": { "const": true },
+    "autoSendEligible": { "const": false }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "authorship": { "const": "template" } }, "required": ["authorship"] },
+      "then": { "required": ["templateId"] }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "providerCode": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z][a-z0-9._-]{0,63}$" },
+    "accountId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" },
+    "messageId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" },
+    "threadId": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\r\\n]+$" },
+    "messageReference": { "type": "string", "minLength": 1, "maxLength": 998, "pattern": "^[^\\r\\n]+$" },
+    "emailAddress": { "type": "string", "format": "email", "maxLength": 320 }
+  }
+}

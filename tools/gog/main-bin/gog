@@ -1,0 +1,5 @@
+#!/bin/sh
+# Main-agent opt-in route: an explicit approved account is mandatory.
+set -eu
+GOG_ROUTE_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+exec /Users/cole/.openclaw/tools/node/bin/node "$GOG_ROUTE_ROOT/scripts/gog-main.cjs" "$@"

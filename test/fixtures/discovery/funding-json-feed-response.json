@@ -1,0 +1,24 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "Reviewed startup funding signals",
+  "home_page_url": "https://funding.example.test/",
+  "feed_url": "https://funding.example.test/signals.json",
+  "items": [
+    {
+      "id": "funding-acme-series-b-2026",
+      "url": "https://funding.example.test/news/acme-series-b",
+      "external_url": "https://news.example.test/acme-series-b",
+      "title": "Acme Robotics raises a Series B",
+      "date_published": "2026-07-14T16:00:00Z",
+      "date_modified": "2026-07-14T17:00:00Z",
+      "content_html": "<p>Acme Robotics raised funds to expand engineering.</p><script>sendSecrets()</script>",
+      "summary": "Review the company and its official careers page; do not infer an open role.",
+      "_jobtrack_funding": {
+        "company_name": "Acme Robotics",
+        "round": "Series B",
+        "amount": "$40M",
+        "careers_url": "https://www.acmerobotics.example/careers"
+      }
+    }
+  ]
+}

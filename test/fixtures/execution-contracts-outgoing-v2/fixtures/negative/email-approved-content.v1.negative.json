@@ -1,0 +1,34 @@
+{
+  "schemaName": "email-approved-content.v1",
+  "description": "PUBLISHED mutation-focused negative cases for the provider-neutral approved-content contract.",
+  "cases": [
+    {
+      "name": "byte-exact fidelity is forbidden on the content-equivalent lane",
+      "value": {
+        "schemaVersion": "email-approved-content.v1",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "contentId": "approved-content-0001",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "provider": "apple_mail_automation",
+        "accountId": "jobs@example.test",
+        "recipient": "recruiter@example.test",
+        "thread": {
+          "threadId": "apple-thread-1",
+          "inReplyTo": "<apple-message-1@example.test>",
+          "references": ["<apple-message-1@example.test>"]
+        },
+        "subject": "Re: Application communication",
+        "body": {
+          "mediaType": "text/plain",
+          "text": "Thanks for reaching out.",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "attachments": [],
+        "sendFidelity": "byte_exact",
+        "requiresHumanApproval": true,
+        "createdAt": "2026-08-01T05:30:00.000Z"
+      }
+    }
+  ]
+}

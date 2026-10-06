@@ -1,0 +1,48 @@
+{
+  "schemaName": "email-reply-draft-proposal.v3",
+  "description": "PUBLISHED mutation-focused negative cases for the provider-neutral draft proposal.",
+  "cases": [
+    {
+      "name": "template authorship without a template identifier",
+      "value": {
+        "schemaVersion": "email-reply-draft-proposal.v3",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "proposalId": "draft-apple-0001",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "factsDigest": "f0458bd4c3ae5855ae1860664b4488532e3632521c02e0ffdcb4bccf586c3319",
+        "source": {
+          "provider": "apple_mail_emlx",
+          "accountId": "jobs@example.test",
+          "messageId": "apple-message-1",
+          "threadId": "apple-thread-1",
+          "replyToAddress": "recruiter@example.test",
+          "inReplyTo": "<apple-message-1@example.test>",
+          "references": ["<apple-message-1@example.test>"]
+        },
+        "recipient": "recruiter@example.test",
+        "subject": "Re: Application communication",
+        "body": "Thanks for reaching out.",
+        "bodyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "purpose": "information_response",
+        "authorship": "template",
+        "expiresAt": "2026-08-02T05:30:00.000Z",
+        "sensitiveDataScan": "passed",
+        "toneDecisionId": "tone-apple-0001",
+        "toneDecisionDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "voiceRevisionId": "voice-0001",
+        "voiceRevisionDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "sourceStateSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "delivery": {
+          "provider": "apple_mail_automation",
+          "accountId": "jobs@example.test",
+          "sendFidelity": "content_equivalent"
+        },
+        "registerAdaptationOnly": true,
+        "distinctivePhraseReuse": false,
+        "requiresReview": true,
+        "autoSendEligible": false
+      }
+    }
+  ]
+}

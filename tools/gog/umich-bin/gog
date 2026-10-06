@@ -1,0 +1,5 @@
+#!/bin/sh
+# Explicit opt-in PATH directory for university-account workers only.
+set -eu
+GOG_ROUTE_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+exec /Users/cole/.openclaw/tools/node/bin/node "$GOG_ROUTE_ROOT/scripts/gog-umich.cjs" "$@"

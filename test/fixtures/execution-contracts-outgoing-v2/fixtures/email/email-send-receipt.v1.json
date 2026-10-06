@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "email-send-receipt.v1",
+  "receiptId": "send-receipt-0001",
+  "requestId": "send-req-0001",
+  "idempotencyKey": "send-message-1-draft-0001",
+  "requestDigest": "d67708ee6ea158efb7763a6ff552d8c692e45f9ca15c7666ee5cc8c209e6ca0a",
+  "status": "sent",
+  "provider": "gmail",
+  "providerMessageId": "gmail-msg-9001",
+  "providerThreadId": "thread-1",
+  "observedAt": "2026-07-19T16:05:00.000Z"
+}

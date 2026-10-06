@@ -1,0 +1,272 @@
+diff --git a/internal/googleapi/transport.go b/internal/googleapi/transport.go
+index fc2712c..d8dfe10 100644
+--- a/internal/googleapi/transport.go
++++ b/internal/googleapi/transport.go
+@@ -11,6 +11,7 @@ import (
+ 	"math/big"
+ 	"net/http"
+ 	"strconv"
++	"strings"
+ 	"time"
+ )
+ 
+@@ -49,6 +50,39 @@ func (t *RetryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+ 		return nil, &CircuitBreakerError{}
+ 	}
+ 
++	// JobTrack's approved mutations are physically single-attempt. A 429,
++	// 5xx, disconnect, or redirect does not prove that no mutation occurred.
++	// Keep read retries, but remove replay hooks before both OAuth and Go's
++	// HTTP/1 and HTTP/2 transports see a non-read request.
++	if req.Method != http.MethodGet && req.Method != http.MethodHead && req.Method != http.MethodOptions {
++		for name := range req.Header {
++			if strings.EqualFold(name, "Idempotency-Key") || strings.EqualFold(name, "X-Idempotency-Key") {
++				if req.Body != nil {
++					_ = req.Body.Close()
++				}
++				return nil, errors.New("jobtrack: mutation replay header refused")
++			}
++		}
++		once := req.Clone(req.Context())
++		once.GetBody = nil
++		if once.Body == nil || once.Body == http.NoBody {
++			// HTTP/2 may retry requests with a nil/NoBody regardless of method.
++			// Preserve empty bytes without exposing that replay shortcut.
++			once.Body = io.NopCloser(bytes.NewReader(nil))
++		}
++		resp, err := t.Base.RoundTrip(once)
++		if err != nil {
++			return nil, fmt.Errorf("single-attempt mutation: %w", err)
++		}
++		// Reject here, before http.Client can use the original request's
++		// GetBody for 307/308 or turn a 301/302/303 into another request.
++		if resp.StatusCode >= 300 && resp.StatusCode < 400 {
++			drainAndClose(resp.Body)
++			return nil, errors.New("jobtrack: mutation redirect refused")
++		}
++		return resp, nil
++	}
++
+ 	replayable, err := ensureReplayableBody(req)
+ 	if err != nil {
+ 		return nil, err
+diff --git a/internal/googleapi/transport_more_test.go b/internal/googleapi/transport_more_test.go
+index 77ca9a3..97915d3 100644
+--- a/internal/googleapi/transport_more_test.go
++++ b/internal/googleapi/transport_more_test.go
+@@ -386,7 +386,7 @@ func TestDrainAndClose(t *testing.T) {
+ 	}
+ }
+ 
+-func TestRetryTransportRoundTripResetsBody(t *testing.T) {
++func TestRetryTransportRoundTripResetsReadBody(t *testing.T) {
+ 	var gotBodies []string
+ 	base := roundTripFunc(func(req *http.Request) (*http.Response, error) {
+ 		body, err := io.ReadAll(req.Body)
+@@ -406,7 +406,7 @@ func TestRetryTransportRoundTripResetsBody(t *testing.T) {
+ 		BaseDelay:     0,
+ 	}
+ 
+-	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, "http://example.com", io.NopCloser(strings.NewReader("payload")))
++	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "http://example.com", io.NopCloser(strings.NewReader("payload")))
+ 	if err != nil {
+ 		t.Fatalf("new request: %v", err)
+ 	}
+diff --git a/internal/googleapi/transport_test.go b/internal/googleapi/transport_test.go
+index 90e6a92..91d1c1b 100644
+--- a/internal/googleapi/transport_test.go
++++ b/internal/googleapi/transport_test.go
+@@ -367,7 +367,7 @@ func TestRetryTransport_CalculateBackoff_NoPanic(t *testing.T) {
+ 	_ = rt.calculateBackoff(0, resp)
+ }
+ 
+-func TestRetryTransport_WithRequestBody(t *testing.T) {
++func TestRetryTransport_MutationBodyIsNotRetried(t *testing.T) {
+ 	mock := &mockTransport{
+ 		responses: []*http.Response{
+ 			{StatusCode: 429, Body: io.NopCloser(strings.NewReader("rate limited"))},
+@@ -392,12 +392,12 @@ func TestRetryTransport_WithRequestBody(t *testing.T) {
+ 		defer resp.Body.Close()
+ 	}
+ 
+-	if resp.StatusCode != 200 {
+-		t.Errorf("expected 200 after retry, got %d", resp.StatusCode)
++	if resp.StatusCode != 429 {
++		t.Errorf("expected original 429 without mutation retry, got %d", resp.StatusCode)
+ 	}
+ 
+-	if mock.calls != 2 {
+-		t.Errorf("expected 2 calls, got %d", mock.calls)
++	if mock.calls != 1 {
++		t.Errorf("expected 1 physical mutation call, got %d", mock.calls)
+ 	}
+ }
+ 
+diff --git a/internal/googleapi/jobtrack_single_attempt_test.go b/internal/googleapi/jobtrack_single_attempt_test.go
+new file mode 100644
+index 0000000..b5b8d0a
+--- /dev/null
++++ b/internal/googleapi/jobtrack_single_attempt_test.go
+@@ -0,0 +1,162 @@
++package googleapi
++
++import (
++	"bytes"
++	"fmt"
++	"io"
++	"net/http"
++	"net/http/httptest"
++	"strings"
++	"sync/atomic"
++	"testing"
++
++	"golang.org/x/oauth2"
++	"google.golang.org/api/gmail/v1"
++	"google.golang.org/api/option"
++)
++
++type jobtrackRoundTripper func(*http.Request) (*http.Response, error)
++
++func (f jobtrackRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
++
++func TestJobTrackPhysicalMutationSingleAttempt(t *testing.T) {
++	for _, code := range []int{200, 401, 429, 500, 502, 503} {
++		t.Run(fmt.Sprint(code), func(t *testing.T) {
++			var physical atomic.Int32
++			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++				if r.Method != http.MethodPost {
++					t.Errorf("method = %s", r.Method)
++				}
++				body, _ := io.ReadAll(r.Body)
++				if len(body) == 0 {
++					t.Error("empty mutation body")
++				}
++				physical.Add(1) // The provider commits before reporting an error.
++				w.WriteHeader(code)
++				_, _ = io.WriteString(w, `{ "id": "native-id", "message": {"id": "native-message"} }`)
++			}))
++			defer server.Close()
++			transport := NewRetryTransport(&oauth2.Transport{
++				Source: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "test-only-not-a-credential"}),
++				Base:   http.DefaultTransport,
++			})
++			client := &http.Client{Transport: transport}
++			svc, err := gmail.NewService(t.Context(), option.WithHTTPClient(client), option.WithEndpoint(server.URL+"/"))
++			if err != nil {
++				t.Fatal(err)
++			}
++			_, err = svc.Users.Drafts.Create("me", &gmail.Draft{Message: &gmail.Message{Raw: "dGVzdA"}}).Do()
++			if code == 200 && err != nil {
++				t.Fatal(err)
++			}
++			if code != 200 && err == nil {
++				t.Fatal("expected provider rejection")
++			}
++			if got := physical.Load(); got != 1 {
++				t.Fatalf("physical draft creates = %d, want 1", got)
++			}
++			physical.Store(0)
++			_, err = svc.Users.Messages.Send("me", &gmail.Message{Raw: "dGVzdA"}).Do()
++			if code == 200 && err != nil {
++				t.Fatal(err)
++			}
++			if code != 200 && err == nil {
++				t.Fatal("expected provider rejection")
++			}
++			if got := physical.Load(); got != 1 {
++				t.Fatalf("physical sends = %d, want 1", got)
++			}
++		})
++	}
++}
++
++func TestJobTrackMutationRefusesRedirectBeforeClientReplay(t *testing.T) {
++	for _, code := range []int{301, 302, 303, 307, 308} {
++		t.Run(fmt.Sprint(code), func(t *testing.T) {
++			var original, destination atomic.Int32
++			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++				if r.URL.Path == "/destination" {
++					destination.Add(1)
++					return
++				}
++				original.Add(1)
++				w.Header().Set("Location", "/destination")
++				w.WriteHeader(code)
++			}))
++			defer server.Close()
++			req, _ := http.NewRequest(http.MethodPost, server.URL+"/create", strings.NewReader("committed mutation"))
++			if req.GetBody == nil {
++				t.Fatal("test requires replayable initial request")
++			}
++			client := &http.Client{Transport: NewRetryTransport(http.DefaultTransport)}
++			resp, err := client.Do(req)
++			if resp != nil {
++				resp.Body.Close()
++			}
++			if err == nil {
++				t.Fatal("mutation redirect must fail closed")
++			}
++			if original.Load() != 1 || destination.Load() != 0 {
++				t.Fatalf("requests original=%d destination=%d", original.Load(), destination.Load())
++			}
++		})
++	}
++}
++
++func TestJobTrackMutationRemovesReplayHooksAndRejectsHeaders(t *testing.T) {
++	for _, method := range []string{"POST", "PUT", "PATCH", "DELETE", "post"} {
++		req, _ := http.NewRequest(method, "https://example.invalid/", bytes.NewBufferString("mutation"))
++		base := jobtrackRoundTripper(func(r *http.Request) (*http.Response, error) {
++			if r.GetBody != nil {
++				t.Fatal("unsafe request retains GetBody")
++			}
++			body, _ := io.ReadAll(r.Body)
++			if string(body) != "mutation" {
++				t.Fatal("body altered")
++			}
++			return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader("ok"))}, nil
++		})
++		resp, err := NewRetryTransport(base).RoundTrip(req)
++		if err != nil {
++			t.Fatal(err)
++		}
++		resp.Body.Close()
++	}
++	for _, name := range []string{"Idempotency-Key", "X-Idempotency-Key", "idempotency-key", "x-idempotency-key"} {
++		req, _ := http.NewRequest(http.MethodPost, "https://example.invalid/", bytes.NewBufferString("mutation"))
++		req.Header[name] = []string{""}
++		base := jobtrackRoundTripper(func(r *http.Request) (*http.Response, error) {
++			t.Fatal("unsafe replay header reached network")
++			return nil, nil
++		})
++		if _, err := NewRetryTransport(base).RoundTrip(req); err == nil {
++			t.Fatal("expected replay header rejection")
++		}
++	}
++}
++
++func TestJobTrackMutationDisconnectAfterCommitIsNotReplayed(t *testing.T) {
++	var physical atomic.Int32
++	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++		_, _ = io.ReadAll(r.Body)
++		physical.Add(1)
++		conn, _, err := w.(http.Hijacker).Hijack()
++		if err != nil {
++			t.Error(err)
++			return
++		}
++		_ = conn.Close()
++	}))
++	defer server.Close()
++	client := &http.Client{Transport: NewRetryTransport(http.DefaultTransport)}
++	resp, err := client.Post(server.URL, "application/json", strings.NewReader(`{"commit":true}`))
++	if resp != nil {
++		resp.Body.Close()
++	}
++	if err == nil {
++		t.Fatal("expected missing acknowledgement")
++	}
++	if physical.Load() != 1 {
++		t.Fatalf("physical commits = %d", physical.Load())
++	}
++}

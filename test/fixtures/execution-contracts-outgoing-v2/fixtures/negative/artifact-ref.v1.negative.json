@@ -1,0 +1,39 @@
+{
+  "schemaName": "artifact-ref.v1",
+  "description": "PUBLISHED negative cases for artifact-ref.v1. Every value MUST be REJECTED by the FROZEN JSON Schema. Used by the cross-repo gate against each consumer's vendored copy.",
+  "cases": [
+    {
+      "name": "digest with sha256: prefix (must be bare 64-hex)",
+      "reason": "digest pattern ^[a-f0-9]{64}$",
+      "value": {
+        "contractId": "job-application-email-facts.v1",
+        "digest": "sha256:95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5"
+      }
+    },
+    {
+      "name": "contractId with uppercase (lowercase-only pattern)",
+      "reason": "contractId pattern lowercase",
+      "value": {
+        "contractId": "JobFacts.v1",
+        "digest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5"
+      }
+    },
+    {
+      "name": "contractId not ending in .vN",
+      "reason": "contractId pattern requires .v<positive-int> suffix",
+      "value": {
+        "contractId": "job-application-email-facts",
+        "digest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5"
+      }
+    },
+    {
+      "name": "unexpected additional property",
+      "reason": "additionalProperties:false",
+      "value": {
+        "contractId": "job-application-email-facts.v1",
+        "digest": "95db8498651e03d434755c2a3c97e73be389448159dc445ee0f6e204fd458da5",
+        "url": "https://example.test/artifact"
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "email-send-receipt.v2",
+  "normalizationVersion": "email-text-nfc-lf.v1",
+  "receiptId": "send-receipt-apple-0001",
+  "attemptId": "send-attempt-apple-0001",
+  "requestId": "send-req-apple-0001",
+  "idempotencyKey": "send-apple-thread-1-approved-content-0001",
+  "requestDigest": "431f2d433c46f1e3b7191753c39b8d71de01e04d0b197ae80f93baefa7e917be",
+  "generationId": "job-platform-gen-0001",
+  "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "provider": "apple_mail_automation",
+  "accountId": "jobs@example.test",
+  "recipient": "recruiter@example.test",
+  "threadId": "apple-thread-1",
+  "contentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+  "sendFidelity": "content_equivalent",
+  "outcome": "sent",
+  "classification": "applied",
+  "operationJournalEvidenceDigest": "4444444444444444444444444444444444444444444444444444444444444444",
+  "providerEvidenceDigest": "5555555555555555555555555555555555555555555555555555555555555555",
+  "providerDraftId": "apple-draft-9001",
+  "providerMessageId": "apple-message-9001",
+  "providerThreadId": "apple-thread-1",
+  "nativeAttestation": {
+    "algorithm": "Ed25519",
+    "keyId": "apple-native-test-ed25519-v1",
+    "payloadDigest": "9e9bda0464e0103f4835af3bb3116ec90b5cf51fb88bbf0ab2d74d899d45a5c4",
+    "signatureEncoding": "base64",
+    "signature": "xGTYQddOTltmquN/ZkEY0sTd5JVtOIm/eF0GXktAQRTqPVOsG2n8dgC8c84PXAcnq2Ei/dtHUsNvlRaktDqtDQ=="
+  },
+  "observedAt": "2026-08-01T05:42:00.000Z"
+}

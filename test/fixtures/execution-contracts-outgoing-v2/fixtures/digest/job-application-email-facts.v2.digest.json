@@ -1,0 +1,7 @@
+{
+  "contractId": "job-application-email-facts.v2",
+  "note": "Provider-neutral Apple Mail golden facts. This digest binds the exact v2 contract identity and exact apple_mail_emlx provider provenance.",
+  "rule": "canonical-json(code-unit key sort, recursive) then sha256, bare lowercase hex, no prefix",
+  "canonicalJson": "{\"applicationRefs\":[],\"contentCompleteness\":\"sanitized_plain_text\",\"eventKind\":\"action_required\",\"evidence\":[{\"excerpt\":\"recruiter@example.test\",\"field\":\"from\"},{\"excerpt\":\"Application communication\",\"field\":\"subject\"}],\"extraction\":{\"confidence\":0.87,\"provider\":\"inbox-pipeline\",\"version\":\"jobtrack-relay.v3\"},\"postingRefs\":[],\"replyRequested\":false,\"schemaVersion\":\"job-application-email-facts.v2\",\"security\":{\"requiresReview\":true,\"risk\":\"medium\"},\"source\":{\"accountId\":\"jobs@example.test\",\"contentDigest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"fromAddress\":\"recruiter@example.test\",\"fromDomain\":\"example.test\",\"messageId\":\"apple-message-1\",\"provider\":\"apple_mail_emlx\",\"receivedAt\":\"2026-07-22T18:00:00.000Z\",\"threadId\":\"apple-thread-1\"},\"trust\":\"untrusted_external\"}",
+  "digest": "f0458bd4c3ae5855ae1860664b4488532e3632521c02e0ffdcb4bccf586c3319"
+}

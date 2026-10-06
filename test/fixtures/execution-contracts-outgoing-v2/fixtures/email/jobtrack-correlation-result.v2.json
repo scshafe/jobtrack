@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "jobtrack-correlation-result.v2",
+  "source": {
+    "provider": "apple_mail_emlx",
+    "accountId": "jobs@example.test",
+    "messageId": "apple-message-1",
+    "threadId": "apple-thread-1"
+  },
+  "factsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "resolution": "unmatched",
+  "candidates": [],
+  "evidence": [
+    {
+      "kind": "from_domain",
+      "value": "example.test"
+    }
+  ],
+  "automaticEligible": false
+}

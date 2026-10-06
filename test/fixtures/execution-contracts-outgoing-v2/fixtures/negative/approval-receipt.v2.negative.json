@@ -1,0 +1,194 @@
+{
+  "schemaName": "approval-receipt.v2",
+  "description": "PUBLISHED mutation-focused negative cases for structural one-send consent.",
+  "cases": [
+    {
+      "name": "unauthenticated approval channel",
+      "value": {
+        "schemaVersion": "approval-receipt.v2",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "approvalId": "approval-apple-0001",
+        "decision": "approve",
+        "idempotencyKey": "send-apple-thread-1-approved-content-0001",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "approvedContentContractId": "email-approved-content.v1",
+        "approvedContentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+        "approver": { "kind": "human", "id": "cole@example.test" },
+        "approvedAt": "2026-08-01T05:40:00.000Z",
+        "expiresAt": "2026-08-01T06:40:00.000Z",
+        "scope": {
+          "action": "send-once",
+          "maximumSends": 1,
+          "sendFidelity": "content_equivalent",
+          "provider": "apple_mail_automation",
+          "accountId": "jobs@example.test",
+          "recipient": "recruiter@example.test",
+          "threadId": "apple-thread-1"
+        },
+        "authenticatedChannel": {
+          "kind": "jobtrack_fixed_command",
+          "channelId": "jobtrack-approval-ingress-0001",
+          "authenticated": false,
+          "authenticationReceiptDigest": "9999999999999999999999999999999999999999999999999999999999999999"
+        },
+        "attestation": {
+          "algorithm": "Ed25519",
+          "keyId": "jobtrack-approval-test-ed25519-v1",
+          "payloadDigest": "2624ab273e87d2b2b4b87fad38b30dff21cca34b7fa90604860c6464d1e68f28",
+          "signatureEncoding": "base64",
+          "signature": "Q+nEkEOZ+I0tvgMWFiVs4YQWzZSVHARYVw2Hx333s9OB0KH61jWFngxv+thPw6xZXja/4/kwaPGUFVGUC4BjDQ=="
+        }
+      }
+    },
+    {
+      "name": "rejection cannot instantiate a positive approval receipt",
+      "value": {
+        "schemaVersion": "approval-receipt.v2",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "approvalId": "approval-apple-0002",
+        "decision": "reject",
+        "idempotencyKey": "send-apple-thread-1-approved-content-0002",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "approvedContentContractId": "email-approved-content.v1",
+        "approvedContentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+        "approver": { "kind": "human", "id": "cole@example.test" },
+        "approvedAt": "2026-08-01T05:40:00.000Z",
+        "expiresAt": "2026-08-01T06:40:00.000Z",
+        "scope": {
+          "action": "send-once",
+          "maximumSends": 1,
+          "sendFidelity": "content_equivalent",
+          "provider": "apple_mail_automation",
+          "accountId": "jobs@example.test",
+          "recipient": "recruiter@example.test",
+          "threadId": "apple-thread-1"
+        },
+        "authenticatedChannel": {
+          "kind": "jobtrack_fixed_command",
+          "channelId": "jobtrack-approval-ingress-0002",
+          "authenticated": true,
+          "authenticationReceiptDigest": "8888888888888888888888888888888888888888888888888888888888888888"
+        },
+        "attestation": {
+          "algorithm": "Ed25519",
+          "keyId": "jobtrack-approval-test-ed25519-v1",
+          "payloadDigest": "2624ab273e87d2b2b4b87fad38b30dff21cca34b7fa90604860c6464d1e68f28",
+          "signatureEncoding": "base64",
+          "signature": "Q+nEkEOZ+I0tvgMWFiVs4YQWzZSVHARYVw2Hx333s9OB0KH61jWFngxv+thPw6xZXja/4/kwaPGUFVGUC4BjDQ=="
+        }
+      }
+    },
+    {
+      "name": "approval attestation is mandatory",
+      "value": {
+        "schemaVersion": "approval-receipt.v2",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "approvalId": "approval-apple-0003",
+        "decision": "approve",
+        "idempotencyKey": "send-apple-thread-1-approved-content-0003",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "approvedContentContractId": "email-approved-content.v1",
+        "approvedContentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+        "approver": { "kind": "human", "id": "cole@example.test" },
+        "approvedAt": "2026-08-01T05:40:00.000Z",
+        "expiresAt": "2026-08-01T06:40:00.000Z",
+        "scope": {
+          "action": "send-once",
+          "maximumSends": 1,
+          "sendFidelity": "content_equivalent",
+          "provider": "apple_mail_automation",
+          "accountId": "jobs@example.test",
+          "recipient": "recruiter@example.test",
+          "threadId": "apple-thread-1"
+        },
+        "authenticatedChannel": {
+          "kind": "jobtrack_fixed_command",
+          "channelId": "jobtrack-approval-ingress-0003",
+          "authenticated": true,
+          "authenticationReceiptDigest": "7777777777777777777777777777777777777777777777777777777777777777"
+        }
+      }
+    },
+    {
+      "name": "approval attestation rejects unsupported algorithms",
+      "value": {
+        "schemaVersion": "approval-receipt.v2",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "approvalId": "approval-apple-0004",
+        "decision": "approve",
+        "idempotencyKey": "send-apple-thread-1-approved-content-0004",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "approvedContentContractId": "email-approved-content.v1",
+        "approvedContentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+        "approver": { "kind": "human", "id": "cole@example.test" },
+        "approvedAt": "2026-08-01T05:40:00.000Z",
+        "expiresAt": "2026-08-01T06:40:00.000Z",
+        "scope": {
+          "action": "send-once",
+          "maximumSends": 1,
+          "sendFidelity": "content_equivalent",
+          "provider": "apple_mail_automation",
+          "accountId": "jobs@example.test",
+          "recipient": "recruiter@example.test",
+          "threadId": "apple-thread-1"
+        },
+        "authenticatedChannel": {
+          "kind": "jobtrack_fixed_command",
+          "channelId": "jobtrack-approval-ingress-0004",
+          "authenticated": true,
+          "authenticationReceiptDigest": "6666666666666666666666666666666666666666666666666666666666666666"
+        },
+        "attestation": {
+          "algorithm": "HMAC-SHA256",
+          "keyId": "jobtrack-approval-test-ed25519-v1",
+          "payloadDigest": "2624ab273e87d2b2b4b87fad38b30dff21cca34b7fa90604860c6464d1e68f28",
+          "signatureEncoding": "base64",
+          "signature": "Q+nEkEOZ+I0tvgMWFiVs4YQWzZSVHARYVw2Hx333s9OB0KH61jWFngxv+thPw6xZXja/4/kwaPGUFVGUC4BjDQ=="
+        }
+      }
+    },
+    {
+      "name": "approval attestation requires a canonical 64-byte Ed25519 signature",
+      "value": {
+        "schemaVersion": "approval-receipt.v2",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "approvalId": "approval-apple-0005",
+        "decision": "approve",
+        "idempotencyKey": "send-apple-thread-1-approved-content-0005",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "approvedContentContractId": "email-approved-content.v1",
+        "approvedContentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+        "approver": { "kind": "human", "id": "cole@example.test" },
+        "approvedAt": "2026-08-01T05:40:00.000Z",
+        "expiresAt": "2026-08-01T06:40:00.000Z",
+        "scope": {
+          "action": "send-once",
+          "maximumSends": 1,
+          "sendFidelity": "content_equivalent",
+          "provider": "apple_mail_automation",
+          "accountId": "jobs@example.test",
+          "recipient": "recruiter@example.test",
+          "threadId": "apple-thread-1"
+        },
+        "authenticatedChannel": {
+          "kind": "jobtrack_fixed_command",
+          "channelId": "jobtrack-approval-ingress-0005",
+          "authenticated": true,
+          "authenticationReceiptDigest": "5555555555555555555555555555555555555555555555555555555555555555"
+        },
+        "attestation": {
+          "algorithm": "Ed25519",
+          "keyId": "jobtrack-approval-test-ed25519-v1",
+          "payloadDigest": "2624ab273e87d2b2b4b87fad38b30dff21cca34b7fa90604860c6464d1e68f28",
+          "signatureEncoding": "base64",
+          "signature": "not-a-64-byte-signature"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "ruleSetVersion": "email-correlation-text-normalization.v1",
+  "unicodeNormalization": "NFKC",
+  "caseFold": "lower",
+  "punctuation": "space",
+  "whitespace": "collapse",
+  "trim": true
+}

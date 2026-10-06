@@ -1,0 +1,76 @@
+{
+  "schemaName": "email-send-receipt.v1",
+  "description": "PUBLISHED negative cases for email-send-receipt.v1. Every value MUST be REJECTED by the FROZEN JSON Schema (status/provider allOf if-then invariants). Used by the cross-repo gate against each consumer's vendored copy.",
+  "cases": [
+    {
+      "name": "sent status missing provider identifiers",
+      "reason": "allOf if-then: sent => provider+providerMessageId required",
+      "value": {
+        "schemaVersion": "email-send-receipt.v1",
+        "receiptId": "send-receipt-0001",
+        "requestId": "send-req-0001",
+        "idempotencyKey": "send-message-1-draft-0001",
+        "requestDigest": "d67708ee6ea158efb7763a6ff552d8c692e45f9ca15c7666ee5cc8c209e6ca0a",
+        "status": "sent",
+        "observedAt": "2026-07-19T16:05:00.000Z"
+      }
+    },
+    {
+      "name": "sent status carrying a failure reason",
+      "reason": "allOf if-then: sent => not failureReason",
+      "value": {
+        "schemaVersion": "email-send-receipt.v1",
+        "receiptId": "send-receipt-0001",
+        "requestId": "send-req-0001",
+        "idempotencyKey": "send-message-1-draft-0001",
+        "requestDigest": "d67708ee6ea158efb7763a6ff552d8c692e45f9ca15c7666ee5cc8c209e6ca0a",
+        "status": "sent",
+        "provider": "gmail",
+        "providerMessageId": "gmail-msg-9001",
+        "failureReason": "should not be here",
+        "observedAt": "2026-07-19T16:05:00.000Z"
+      }
+    },
+    {
+      "name": "failed status missing failure reason",
+      "reason": "allOf if-then: failed => failureReason required",
+      "value": {
+        "schemaVersion": "email-send-receipt.v1",
+        "receiptId": "send-receipt-0001",
+        "requestId": "send-req-0001",
+        "idempotencyKey": "send-message-1-draft-0001",
+        "requestDigest": "d67708ee6ea158efb7763a6ff552d8c692e45f9ca15c7666ee5cc8c209e6ca0a",
+        "status": "failed",
+        "observedAt": "2026-07-19T16:05:00.000Z"
+      }
+    },
+    {
+      "name": "failed status carrying a provider message id",
+      "reason": "allOf if-then: failed => not providerMessageId",
+      "value": {
+        "schemaVersion": "email-send-receipt.v1",
+        "receiptId": "send-receipt-0001",
+        "requestId": "send-req-0001",
+        "idempotencyKey": "send-message-1-draft-0001",
+        "requestDigest": "d67708ee6ea158efb7763a6ff552d8c692e45f9ca15c7666ee5cc8c209e6ca0a",
+        "status": "failed",
+        "failureReason": "provider rejected",
+        "providerMessageId": "gmail-msg-9001",
+        "observedAt": "2026-07-19T16:05:00.000Z"
+      }
+    },
+    {
+      "name": "unknown status enum value",
+      "reason": "status enum closed set",
+      "value": {
+        "schemaVersion": "email-send-receipt.v1",
+        "receiptId": "send-receipt-0001",
+        "requestId": "send-req-0001",
+        "idempotencyKey": "send-message-1-draft-0001",
+        "requestDigest": "d67708ee6ea158efb7763a6ff552d8c692e45f9ca15c7666ee5cc8c209e6ca0a",
+        "status": "queued",
+        "observedAt": "2026-07-19T16:05:00.000Z"
+      }
+    }
+  ]
+}

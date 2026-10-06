@@ -1,0 +1,143 @@
+{
+  "schemaName": "email-send-receipt.v2",
+  "description": "PUBLISHED mutation-focused negatives proving old authority never represents a retryable provider outcome.",
+  "cases": [
+    {
+      "name": "indeterminate outcome marked retryable",
+      "value": {
+        "schemaVersion": "email-send-receipt.v2",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "receiptId": "send-receipt-apple-0001",
+        "attemptId": "send-attempt-apple-0001",
+        "requestId": "send-req-apple-0001",
+        "idempotencyKey": "send-apple-thread-1-approved-content-0001",
+        "requestDigest": "a9ab5cbc537607104b8845c0a7d43172014db9c41a92b7069de2e6b397f201f8",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "provider": "apple_mail_automation",
+        "accountId": "jobs@example.test",
+        "recipient": "recruiter@example.test",
+        "threadId": "apple-thread-1",
+        "contentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+        "sendFidelity": "content_equivalent",
+        "outcome": "indeterminate",
+        "classification": "indeterminate",
+        "operationJournalEvidenceDigest": "4444444444444444444444444444444444444444444444444444444444444444",
+        "providerEvidenceDigest": "5555555555555555555555555555555555555555555555555555555555555555",
+        "failure": {
+          "code": "provider_timeout",
+          "message": "provider outcome unknown",
+          "retryDisposition": "retryable"
+        },
+        "observedAt": "2026-08-01T05:42:00.000Z",
+        "nativeAttestation": {
+          "algorithm": "Ed25519",
+          "keyId": "apple-native-test-ed25519-v1",
+          "payloadDigest": "9e9bda0464e0103f4835af3bb3116ec90b5cf51fb88bbf0ab2d74d899d45a5c4",
+          "signatureEncoding": "base64",
+          "signature": "xGTYQddOTltmquN/ZkEY0sTd5JVtOIm/eF0GXktAQRTqPVOsG2n8dgC8c84PXAcnq2Ei/dtHUsNvlRaktDqtDQ=="
+        }
+      }
+    },
+    {
+      "name": "known failure marked retryable",
+      "value": {
+        "schemaVersion": "email-send-receipt.v2",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "receiptId": "send-receipt-apple-failed-0001",
+        "attemptId": "send-attempt-apple-failed-0001",
+        "requestId": "send-req-apple-0001",
+        "idempotencyKey": "send-apple-thread-1-approved-content-0001",
+        "requestDigest": "a9ab5cbc537607104b8845c0a7d43172014db9c41a92b7069de2e6b397f201f8",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "provider": "apple_mail_automation",
+        "accountId": "jobs@example.test",
+        "recipient": "recruiter@example.test",
+        "threadId": "apple-thread-1",
+        "contentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+        "sendFidelity": "content_equivalent",
+        "outcome": "failed",
+        "classification": "unapplied",
+        "operationJournalEvidenceDigest": "4444444444444444444444444444444444444444444444444444444444444444",
+        "providerEvidenceDigest": "5555555555555555555555555555555555555555555555555555555555555555",
+        "failure": {
+          "code": "provider_rejected",
+          "message": "provider rejected request",
+          "retryDisposition": "retryable"
+        },
+        "nonSendEvidence": {
+          "kind": "provider_declared_non_send",
+          "conclusive": true,
+          "digest": "6666666666666666666666666666666666666666666666666666666666666666"
+        },
+        "observedAt": "2026-08-01T05:42:00.000Z",
+        "nativeAttestation": {
+          "algorithm": "Ed25519",
+          "keyId": "apple-native-test-ed25519-v1",
+          "payloadDigest": "9e9bda0464e0103f4835af3bb3116ec90b5cf51fb88bbf0ab2d74d899d45a5c4",
+          "signatureEncoding": "base64",
+          "signature": "xGTYQddOTltmquN/ZkEY0sTd5JVtOIm/eF0GXktAQRTqPVOsG2n8dgC8c84PXAcnq2Ei/dtHUsNvlRaktDqtDQ=="
+        }
+      }
+    },
+    {
+      "name": "sent outcome without native and evidence attestations",
+      "value": {
+        "schemaVersion": "email-send-receipt.v2",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "receiptId": "send-receipt-apple-bare-0001",
+        "attemptId": "send-attempt-apple-bare-0001",
+        "requestId": "send-req-apple-0001",
+        "idempotencyKey": "send-apple-thread-1-approved-content-0001",
+        "requestDigest": "a9ab5cbc537607104b8845c0a7d43172014db9c41a92b7069de2e6b397f201f8",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "provider": "apple_mail_automation",
+        "accountId": "jobs@example.test",
+        "recipient": "recruiter@example.test",
+        "threadId": "apple-thread-1",
+        "contentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+        "sendFidelity": "content_equivalent",
+        "outcome": "sent",
+        "classification": "applied",
+        "providerMessageId": "apple-message-bare-0001",
+        "observedAt": "2026-08-01T05:42:00.000Z"
+      }
+    },
+    {
+      "name": "duplicate outcome without a prior verified applied receipt digest",
+      "value": {
+        "schemaVersion": "email-send-receipt.v2",
+        "normalizationVersion": "email-text-nfc-lf.v1",
+        "receiptId": "send-receipt-apple-duplicate-0001",
+        "attemptId": "send-attempt-apple-duplicate-0001",
+        "requestId": "send-req-apple-0001",
+        "idempotencyKey": "send-apple-thread-1-approved-content-0001",
+        "requestDigest": "a9ab5cbc537607104b8845c0a7d43172014db9c41a92b7069de2e6b397f201f8",
+        "generationId": "job-platform-gen-0001",
+        "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "provider": "apple_mail_automation",
+        "accountId": "jobs@example.test",
+        "recipient": "recruiter@example.test",
+        "threadId": "apple-thread-1",
+        "contentDigest": "faa5c92798384f3cb7330804cc2e8290253ca492c5c03edb8bd419fd2c09b19b",
+        "sendFidelity": "content_equivalent",
+        "outcome": "duplicate",
+        "classification": "applied",
+        "duplicateOfReceiptId": "send-receipt-apple-0001",
+        "providerMessageId": "apple-message-0001",
+        "operationJournalEvidenceDigest": "4444444444444444444444444444444444444444444444444444444444444444",
+        "providerEvidenceDigest": "5555555555555555555555555555555555555555555555555555555555555555",
+        "observedAt": "2026-08-01T05:42:00.000Z",
+        "nativeAttestation": {
+          "algorithm": "Ed25519",
+          "keyId": "apple-native-test-ed25519-v1",
+          "payloadDigest": "9e9bda0464e0103f4835af3bb3116ec90b5cf51fb88bbf0ab2d74d899d45a5c4",
+          "signatureEncoding": "base64",
+          "signature": "xGTYQddOTltmquN/ZkEY0sTd5JVtOIm/eF0GXktAQRTqPVOsG2n8dgC8c84PXAcnq2Ei/dtHUsNvlRaktDqtDQ=="
+        }
+      }
+    }
+  ]
+}

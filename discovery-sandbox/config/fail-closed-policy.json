@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "policyId": "fail-closed-example",
+  "userAgent": "JobTrack-discovery-egress/0.3 (+private operator tool)",
+  "allowedOrigins": [
+    {
+      "hostname": "example.invalid",
+      "port": 443,
+      "paths": [
+        {
+          "match": "exact",
+          "value": "/disabled"
+        }
+      ],
+      "allowedQueryKeys": [],
+      "requiredQuery": {}
+    }
+  ],
+  "allowedContentTypes": [
+    "application/json"
+  ],
+  "limits": {
+    "maxRedirects": 0,
+    "timeoutMs": 20000,
+    "maxCompressedBytes": 10485760,
+    "maxDecompressedBytes": 10485760
+  }
+}

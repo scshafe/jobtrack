@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "environment-descriptor.v1",
+  "network": "model-endpoint",
+  "capabilities": [
+    "filesystem:corpus-ro"
+  ],
+  "mounts": [
+    {
+      "path": "/corpus",
+      "mode": "ro"
+    }
+  ],
+  "secretRefs": [
+    "secretref:record-proposal-token"
+  ],
+  "io": {
+    "inputContract": "job-application-email-facts.v1",
+    "outputContract": "email-reply-draft-proposal.v2"
+  },
+  "budget": {
+    "maxTokens": 200000,
+    "maxCostMicroUsd": 500000,
+    "maxElapsedMs": 600000
+  }
+}

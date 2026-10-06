@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "email-approved-content.v1",
+  "normalizationVersion": "email-text-nfc-lf.v1",
+  "contentId": "approved-content-0001",
+  "generationId": "job-platform-gen-0001",
+  "manifestDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "provider": "apple_mail_automation",
+  "accountId": "jobs@example.test",
+  "recipient": "recruiter@example.test",
+  "thread": {
+    "threadId": "apple-thread-1",
+    "inReplyTo": "<apple-message-1@example.test>",
+    "references": ["<apple-message-1@example.test>"]
+  },
+  "subject": "Re: Application communication",
+  "body": {
+    "mediaType": "text/plain",
+    "text": "Thanks for reaching out. I am glad to continue the conversation and will follow up with the requested details shortly.",
+    "digest": "d1c1a687fb16bc94690273a41b7568f1a78cbeae76de4f314740879bf45c7415"
+  },
+  "attachments": [],
+  "sendFidelity": "content_equivalent",
+  "requiresHumanApproval": true,
+  "createdAt": "2026-08-01T05:30:00.000Z"
+}

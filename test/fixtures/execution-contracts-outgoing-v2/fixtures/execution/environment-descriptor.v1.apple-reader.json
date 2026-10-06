@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "environment-descriptor.v1",
+  "network": "none",
+  "capabilities": [
+    "filesystem:mail-store-ro",
+    "mail:read"
+  ],
+  "mounts": [
+    {
+      "path": "/mail-store",
+      "mode": "ro"
+    }
+  ],
+  "secretRefs": [],
+  "io": {
+    "inputContract": "email-reader-page-request.v1",
+    "outputContract": "email-ingest-page.v1"
+  }
+}
