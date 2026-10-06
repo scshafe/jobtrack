@@ -121,7 +121,7 @@ test('with a login the entrypoint execs the production pass and rewrites only co
   assert.equal(argv[4], `cd ${root} && ${f.fakeNode} bin/jobtrack.js fabric dispatch --max-workers 3 --notify --json`);
 });
 
-test('the heartbeat refuses a store without jobtrack.db and a malformed interval', (t) => {
+test('the heartbeat refuses a store without jobtrack.db, a malformed interval and a malformed start delay', (t) => {
   const f = fixture(t);
   const noStore = runService('fabric-heartbeat.sh', { JOBTRACK_HOME: f.store });
   assert.equal(noStore.status, 78, noStore.stderr);
@@ -130,4 +130,7 @@ test('the heartbeat refuses a store without jobtrack.db and a malformed interval
   const badInterval = runService('fabric-heartbeat.sh', { JOBTRACK_HOME: f.store, JOBTRACK_HEARTBEAT_SECONDS: '1h' });
   assert.equal(badInterval.status, 78, badInterval.stderr);
   assert.match(badInterval.stderr, /whole number/);
+  const badDelay = runService('fabric-heartbeat.sh', { JOBTRACK_HOME: f.store, JOBTRACK_HEARTBEAT_START_DELAY_SECONDS: '-5' });
+  assert.equal(badDelay.status, 78, badDelay.stderr);
+  assert.match(badDelay.stderr, /START_DELAY_SECONDS must be a whole number/);
 });
