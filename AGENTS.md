@@ -1,8 +1,8 @@
 # JobTrack agent contract
 
-> Deploys are paused (2026-10-05): mc-autodeploy retired; a merge to main does not deploy.
-> This project moves to the runner lane (infra docs/platform/agent-deploy.md phase 6);
-> until then a deploy is an owner step.
+> Deploys are paused until the runner lane's takeover (infra docs/platform/agent-deploy.md
+> phase 6): the owner's session dispatches the first deploy after draining the workers;
+> until then a merge to main does not deploy.
 
 JobTrack is a private, agent-operable job-search system: a SQLite store
 (`JOBTRACK_HOME`: `jobtrack.db` + `attachments/`), the `jobtrack` CLI and
@@ -18,26 +18,31 @@ build conventions below are the repo's own and still apply.
   better-sqlite3 on a release with prebuilt binaries (12.x): 13 builds from source, and
   the slim images have no compiler. Opt-in container suites: `npm run test:containers`
   (docker). Never use a personal store as a fixture (`docs/TEST_STORES.md`).
-- **Production:** merging to `main` deploys. `[deploy] lane = "autodeploy"`, stack
-  `jobtrack` (infra `stacks/jobtrack/`), host `lubuntu` (the laptop), at
-  https://jobtrack.example-tailnet.ts.net (tailnet only). The `mc-autodeploy` timer
-  fast-forwards Lubuntu's `~/src/jobtrack`, and Conductor's `jobtrack` enrollment runs
-  `scripts/conductor-gate.sh` install, `test-shard 1..4 4` (four slices under its 600 s cap
-  per command), and export-contract against the live store. Then it builds `jobtrack-web` and
-  `jobtrack-web-worker`, deploys the viewer, worker and heartbeat together, and verifies
-  `/healthz` with Funnel off. `jobtrack-applysim` follows the same image. Don't race it with manual syncs or runs; confirm the Conductor run and the
-  deployed revision (`docs/VERIFICATION.md`). Local Docker runs are previews.
+- **Production:** merging to `main` deploys. `[deploy] lane = "runner"`, `layout = "app"`:
+  `.github/workflows/deploy.yml` runs `[verify]` on a GitHub-hosted runner, then deploys
+  through the host entrypoint on this repository's self-hosted runner on the laptop
+  (`jobtrack-prod`), then checks health. The stack is this repository's `deploy/stack/`
+  (compose file, `serve.json`, `stack.toml`): the tailnet node `jobtrack`, no door
+  (tailnet ACLs only), the viewer `web`, and the write side `worker` and `heartbeat`
+  (compose profile `worker`, from `Dockerfile.worker`, built from the same commit). Before
+  anything changes the deploy runs the `export-contract` gate in the worker candidate
+  against the live store, mounted read-only (`stack.toml [[gate]]`), and the host's
+  `jobtrack-applysim` (infra) follows the web pin. Watch it: `gh run list -w deploy`.
+  The host grants (the store and Codex home binds, the mirror) are infra's
+  `stacks/jobtrack/host.conf`; a change there is an infra change.
 - **Secrets and data:** never print or commit credentials, tokens, `.env*` files, or store
-  contents. Production config lives on the host, outside git: `stacks/jobtrack/.env`
-  (`TS_AUTHKEY`, image pins, the write side's settings) and `state/` (tailnet identity).
-  The authoritative store is `/srv/jobtrack/store` on Lubuntu, written by the stack's worker
-  and heartbeat. The store is private (0700/0600), and the web view must stay read-only and
+  contents. Production config lives on the host, outside git, in `/srv/stacks/jobtrack/`:
+  `.env` (`TS_AUTHKEY`, the image pins, `COMPOSE_PROFILES`, the ntfy settings; names in
+  `deploy/stack/.env.example`) and `state/tailscale` (the node identity). The
+  authoritative store is `/srv/jobtrack/store` on the laptop, written only by the
+  stack's worker and heartbeat; the worker's Codex login is `/srv/jobtrack/codex-home`.
+  The store is private (0700/0600), and the web view must stay read-only and
   loopback-bound. Obey the private-journal exclusion below.
-- **Where things are:** source `github.com/scshafe/jobtrack`; stack and deploy overrides
-  in `~/src/infra` (`stacks/jobtrack/`, `stacks/jobtrack-applysim/`, `autodeploy/`; the
-  retired Mini replication in `replication/jobtrack/`); deployment and gate docs in
-  `docs/VERIFICATION.md`; unmerged snapshots of other machines' checkouts on
-  `wip/lubuntu-20261002/worktree` and `wip/mini-20261002/worktree` (not main).
+- **Where things are:** source `github.com/scshafe/jobtrack` (public since 2026-10-06; the
+  history before that is in the private `scshafe/jobtrack-archive`); the stack in
+  `deploy/stack/`; host grants in infra `stacks/jobtrack/host.conf`, the ApplySim viewer
+  in infra `stacks/jobtrack-applysim/`; gate and verification history in
+  `docs/VERIFICATION.md`.
 - **Write side on Lubuntu since 2026-10-04:** `docs/move-write-side-to-lubuntu.md` (design,
   cutover record, rollback, phases 5–7). The Mini's production LaunchAgents are retired, and
   its `~/.jobtrack` is a tombstone. Only the ApplySim drill daemon still runs there, until
@@ -73,14 +78,9 @@ displays. They share one store on a host volume.
 - **Views:** server-rendered HTML (plain templates / a tiny view lib — no heavy SPA).
 - **Deploy:** a `Dockerfile` + `docker-compose.yml` for the WEB UI; the store is a host
   volume mounted read-only into the container.
-  Production deployment goes through Conductor's `jobtrack` enrollment on
-  `laptop`, serving `https://jobtrack.example-tailnet.ts.net`.
-  Publish the intended source commit to `origin/main`. The existing `mc-autodeploy`
-  timer clean-checks, fetches and fast-forwards the enrolled checkout, then asks
-  Conductor to poll its HEAD. Verify that synchronization, all release gates and
-  the deployed revision; do not race the standing timer with manual source changes
-  or duplicate run submissions. Local Docker restarts are previews.
-  See `docs/VERIFICATION.md` and `scripts/conductor-gate.sh`.
+  Production deploys on merge to `main` through the runner lane (`deploy/stack/`,
+  `.github/workflows/deploy.yml`; see "Production" above), serving
+  `https://jobtrack.example-tailnet.ts.net`. Local Docker runs are previews.
 
 ## Data model (the path through an application)
 
@@ -285,6 +285,7 @@ How a change lands:
 
 The project's agent may merge its own PR and push `main`; there is no approval gate.
 
-Merging deploys to production ([deploy] lane `autodeploy`: Lubuntu's mc-autodeploy redeploys `main`).
-The agent cannot observe the deploy from its sandbox (no tailnet access). After merging, say so in your reply and name the merge commit, so the owner session watches the deploy.
+Merging deploys to production ([deploy] lane `runner`: `.github/workflows/deploy.yml` verifies on a GitHub-hosted runner, deploys through the host entrypoint on the `jobtrack-prod` self-hosted runner, then checks health).
+Watch the run yourself with `gh run list -w deploy`, `gh run watch <id>` and `gh run view <id> --log` (a public repository's deploy log is a summary only); say in your reply what the run did, naming the merge commit.
+Roll back by merging a `git revert`, or by dispatching `deploy.yml` with `sha=<older commit on main>` and `allow_rollback=true` (`gh workflow run deploy.yml -f sha=<sha> -f allow_rollback=true`).
 <!-- scshafe-dev:end landing -->

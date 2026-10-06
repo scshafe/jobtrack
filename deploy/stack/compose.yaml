@@ -1,0 +1,196 @@
+name: jobtrack
+
+# JobTrack's stack (docs/platform/agent-deploy.md in scshafe/infra, "App-owned
+# stacks"): the read-only web view on its own tailnet node, tailnet-only, and
+# the write side (the fabric worker and its hourly heartbeat). The host's
+# tools/stack validates this file against infra's host.conf grants, builds
+# both images from one commit, runs the export-contract gate, and pins them.
+#
+#   https://jobtrack.<tailnet>.ts.net   the viewer, no door (tailnet ACLs only)
+#
+# The store is a host path, /srv/jobtrack/store (cole, 0700), granted in
+# host.conf HOST_BINDS: read-write for the worker and the heartbeat (its only
+# writers), read-only for the viewer and the gate. The Codex login,
+# /srv/jobtrack/codex-home, is the worker's alone. Service and container names
+# are the infra-layout stack's, so a takeover replaces them in place.
+
+networks:
+  # The worker's only way out: Codex (OpenAI), the public pages a brief may
+  # GET, and ntfy over the host's tailnet. A pinned subnet: docker's default
+  # address pools are used up on this host. Unchanged from the infra layout,
+  # so compose keeps the existing network.
+  egress:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.253.88.0/28
+
+services:
+  ts-jobtrack:
+    # tailscale v1.102.2, the tag it ran under the infra layout.
+    image: tailscale/tailscale:v1.102.2@sha256:321ce041508c19079b57a28b6666c8d81ab0b08accc0a2585b3ab663d557ac24
+    container_name: ts-jobtrack
+    init: true
+    environment:
+      TS_AUTHKEY: ${TS_AUTHKEY:-}          # first join only; state/tailscale is authoritative after that
+      TS_HOSTNAME: jobtrack
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_SERVE_CONFIG: /config/serve.json
+      TS_USERSPACE: "true"                 # no TUN, no NET_ADMIN; inbound comes via serve
+      TS_AUTH_ONCE: "true"
+    dns:
+      # Public resolvers: the sidecar resolves only public names (control
+      # plane, DERP, Let's Encrypt); serve proxies to 127.0.0.1 in this netns.
+      - 1.1.1.1
+      - 1.0.0.1
+    volumes:
+      - ./state/tailscale:/var/lib/tailscale
+      - ./serve.json:/config/serve.json:ro
+    restart: unless-stopped
+
+  web:
+    image: jobtrack-web:${JOBTRACK_IMAGE_TAG}
+    container_name: jobtrack-web
+    network_mode: service:ts-jobtrack      # serve proxies to 127.0.0.1:3000 in the sidecar's netns
+    depends_on:
+      - ts-jobtrack
+    init: true
+    # The store's owner (cole, 1000 on the laptop): the 0700/0600 store stays
+    # readable without weakening its permissions.
+    user: "1000:1000"
+    environment:
+      JOBTRACK_HOME: /jobtrack
+      NODE_ENV: production
+      HOST: 127.0.0.1                      # loopback for real: the server's own safety check holds
+      PORT: "3000"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    mem_limit: 256m
+    cpus: 0.50
+    tmpfs:
+      # The reader copies the database to a private directory under os.tmpdir().
+      - /tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3000/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      # The live store, read-only; the app also opens it query_only.
+      - type: bind
+        source: /srv/jobtrack/store
+        target: /jobtrack
+        read_only: true
+        bind:
+          create_host_path: false
+    restart: unless-stopped
+
+  # --- the write side (compose profile `worker`: COMPOSE_PROFILES=worker) ---
+  worker:
+    profiles: ["worker"]
+    # Dockerfile.worker, built by the same deploy from the same commit
+    # (stack.toml extra_images), pinned as a full ref.
+    image: ${JOBTRACK_WORKER_IMAGE}
+    container_name: jobtrack-worker
+    # docker-init forwards SIGTERM to the daemon, which stops admitting passes
+    # and waits for the one in flight (lib/fabric-wake.js).
+    init: true
+    user: "1000:1000"
+    environment:
+      JOBTRACK_HOME: /jobtrack
+      # The worker's own Codex home: auth.json is the owner's login
+      # (`codex login --device-auth`); config.toml is rewritten at every start.
+      CODEX_HOME: /codex-home
+      NODE_ENV: production
+      # No Docker socket and no renderer: renders stay out of the tick.
+      JOBTRACK_RENDERER: "off"
+      # Parked-gate notifications (lib/fabric-notify.js); empty = none.
+      JOBTRACK_NTFY_TOPIC: ${JOBTRACK_NTFY_TOPIC:-}
+      JOBTRACK_NTFY_LABEL: JobTrack
+      JOBTRACK_DISPATCH_ARGS: --max-workers 3 --notify --json
+    extra_hosts:
+      # ntfy's tailnet name, which docker's resolver cannot answer: the ntfy
+      # node's tailscale IP.
+      - "ntfy.colobus-stargazer.ts.net:${NTFY_TAILNET_IP:?set NTFY_TAILNET_IP (the ntfy node's tailscale IP) in .env}"
+    volumes:
+      # The live store, read-write. Never created: a missing directory fails
+      # the container instead of starting a second store (the entrypoint also
+      # refuses a directory without jobtrack.db).
+      - type: bind
+        source: /srv/jobtrack/store
+        target: /jobtrack
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/jobtrack/codex-home
+        target: /codex-home
+        bind:
+          create_host_path: false
+    networks:
+      - egress
+    read_only: true
+    tmpfs:
+      # Codex turn scratch dirs (os.tmpdir()), HOME and tool caches.
+      - /tmp:rw,nosuid,nodev,size=1g,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 512
+    mem_limit: 2g
+    cpus: 1.5
+    # A deploy recreates this container: a staffed Codex turn is cut at 5
+    # minutes, recorded by the engine and re-staffed within its budget
+    # (docs/move-write-side-to-lubuntu.md).
+    stop_grace_period: 5m
+    healthcheck:
+      # The daemon listens on <store>/fabric.sock while it runs.
+      test: ["CMD-SHELL", "test -S /jobtrack/fabric.sock"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  heartbeat:
+    profiles: ["worker"]
+    image: ${JOBTRACK_WORKER_IMAGE}
+    container_name: jobtrack-heartbeat
+    # Hourly: one bounded tick (in-store acts only), then queue.md,
+    # last-tick.json and tick-log.jsonl under fabric/ (scripts/fabric-cron.sh).
+    entrypoint: ["/bin/sh", "/app/scripts/fabric-heartbeat.sh"]
+    init: true
+    user: "1000:1000"
+    environment:
+      JOBTRACK_HOME: /jobtrack
+      NODE_ENV: production
+      JOBTRACK_RENDERER: "off"
+    volumes:
+      - type: bind
+        source: /srv/jobtrack/store
+        target: /jobtrack
+        bind:
+          create_host_path: false
+    # A tick never leaves the store.
+    network_mode: none
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+    mem_limit: 512m
+    cpus: 0.50
+    stop_grace_period: 2m
+    restart: unless-stopped

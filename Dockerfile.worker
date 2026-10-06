@@ -1,8 +1,10 @@
 # The JobTrack write side as a container: the fabric daemon and its hourly
 # heartbeat (docs/move-write-side-to-lubuntu.md). Built by infra's
 # `stack deploy jobtrack` from the same commit as the web image, as
-# DEPLOY_EXTRA_IMAGES `worker` (image jobtrack-web-worker:<sha>), and only
-# while the stack's compose profile `worker` is active. Two services run it:
+# deploy/stack/stack.toml extra_images `worker` (image
+# jobtrack-web-worker:<sha>), and only while the stack's compose profile
+# `worker` is active. The deploy's export-contract gate runs in it too
+# (scripts/conductor-gate.sh). Two services run it:
 #   jobtrack-worker     scripts/fabric-worker-service.sh (the entrypoint):
 #                       `fabric daemon` -> `fabric dispatch --notify`
 #   jobtrack-heartbeat  scripts/fabric-heartbeat.sh: hourly tick + queue.md

@@ -1,0 +1,50 @@
+# The stack's data (stack.toml, schema 1). The host's tools/stack reads it as
+# data, never as shell, and rejects an unknown key; `dev check` (DEPLOY-03)
+# checks the same schema. Secrets are named here and never valued: the owner's
+# provisioning places them on the host. Infra's stacks/jobtrack/host.conf
+# grants what this file cannot: the store and the Codex home (HOST_BINDS
+# `store` and `codex`), and jobtrack-applysim as a mirror of the web pin.
+schema = 1
+
+[deploy]
+image = "jobtrack-web"               # the viewer, from Dockerfile
+pin = "JOBTRACK_IMAGE_TAG"           # the .env variable stack deploy writes (a bare tag);
+pin_style = "tag"                    # jobtrack-applysim (infra) follows the same pin
+dockerfile = "Dockerfile"
+containers = ["jobtrack-web"]        # all must be ready on the candidate
+health = "/healthz"                  # probed through the tailnet name
+ready_attempts = 20
+# The write side: Dockerfile.worker, built from the same commit as
+# jobtrack-web-worker:<sha>, pinned as a full ref in JOBTRACK_WORKER_IMAGE, for
+# the two services of compose profile `worker`; both containers must be ready.
+extra_images = ["worker:Dockerfile.worker:JOBTRACK_WORKER_IMAGE:worker:jobtrack-worker,jobtrack-heartbeat"]
+rollback_services = ["web", "worker", "heartbeat"]
+
+# The public-export contract against the live store, in the worker candidate
+# (the web image has no CLI), before anything changes: the store is mounted
+# read-only, the gate copies it to a scratch directory (SQLite online backup)
+# and exports there (scripts/conductor-gate.sh). No network.
+[[gate]]
+name = "export-contract"
+image = "worker"
+command = ["/bin/sh", "scripts/conductor-gate.sh", "export-contract", "/gate/store"]
+mounts = [{ bind = "store", target = "/gate/store" }]
+timeout_seconds = 600
+
+[check]
+required_health_services = ["web", "worker"]
+
+[backup]
+tailscale = true                     # the node identity (always, with a sidecar)
+paths = [".env"]                     # its values (state/ holds only the identity)
+# The store: a consistent SQLite .backup of every top-level *.db, then the
+# rest (attachments, fabric/) as a tarball. The Codex home is a credential and
+# is never backed up.
+store_dir = { bind = "store" }
+
+[env]
+# COMPOSE_PROFILES=worker turns the write side on; NTFY_TAILNET_IP is the ntfy
+# node's tailscale IP; JOBTRACK_NTFY_TOPIC the parked-gate notification topic.
+required = ["TS_AUTHKEY", "COMPOSE_PROFILES", "NTFY_TAILNET_IP", "JOBTRACK_NTFY_TOPIC"]
+generated = []
+owner = []
