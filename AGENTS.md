@@ -12,11 +12,12 @@ build conventions below are the repo's own and still apply.
 
 - **Run:** `npm ci`, then `npm start` (web view, loopback) or `npm exec -- jobtrack --help`
   (CLI). README "Web Smoke" seeds a throwaway `JOBTRACK_HOME=$(mktemp -d)`.
-- **Verify:** `npm ci && npm test` (`dev.toml [verify]`; CI runs it on Node 22 and never
-  deploys). It is the same suite the release gate runs (`scripts/conductor-gate.sh test`).
-  Run it on Node 22 (the image's runtime): under Node 24, better-sqlite3 11 aborts spawned
-  CLI processes at exit and the suite fails. Opt-in container suites: `npm run
-  test:containers` (docker). Never use a personal store as a fixture (`docs/TEST_STORES.md`).
+- **Verify:** `npm ci && npm test` (`dev.toml [verify]`; CI runs it on Node 22, the
+  images' runtime, and Node 24, and never deploys). Node 22 or 24 both work since
+  better-sqlite3 12 (11 aborted spawned CLI processes at exit under Node 24.21). Keep
+  better-sqlite3 on a release with prebuilt binaries (12.x): 13 builds from source, and
+  the slim images have no compiler. Opt-in container suites: `npm run test:containers`
+  (docker). Never use a personal store as a fixture (`docs/TEST_STORES.md`).
 - **Production:** merging to `main` deploys. `[deploy] lane = "autodeploy"`, stack
   `jobtrack` (infra `stacks/jobtrack/`), host `lubuntu` (the laptop), at
   https://jobtrack.example-tailnet.ts.net (tailnet only). The `mc-autodeploy` timer

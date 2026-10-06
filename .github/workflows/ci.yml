@@ -31,17 +31,23 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # 22: the images' runtime (node:22-bookworm-slim). 24: the current
+        # LTS a developer's checkout runs (better-sqlite3 >= 12 is needed there).
+        node: ["22", "24"]
     steps:
       # actions/checkout v7.0.1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      # actions/setup-node v7.0.0. Node 22: the production image's runtime
-      # (Dockerfile node:22-bookworm-slim; package.json engines >=22). No
-      # private @scshafe packages, so no packages: read.
+      # actions/setup-node v7.0.0. Node 22 (the images' runtime) and 24
+      # (package.json engines >=22). No private @scshafe packages, so no
+      # packages: read.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: "22"
+          node-version: ${{ matrix.node }}
       - name: Verify (dev.toml [verify] command)
         run: |
           npm ci && npm test
