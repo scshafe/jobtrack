@@ -36,7 +36,7 @@ required_health_services = ["web", "worker"]
 
 [backup]
 tailscale = true                     # the node identity (always, with a sidecar)
-paths = []                           # nothing under state/ but the identity
+paths = [".env"]                     # its values (state/ holds only the identity)
 # The store: a consistent SQLite .backup of every top-level *.db, then the
 # rest (attachments, fabric/) as a tarball. The Codex home is a credential and
 # is never backed up.
