@@ -2,7 +2,7 @@
 
 JobTrack is a private, agent-operable job-search system: a SQLite store
 (`JOBTRACK_HOME`: `jobtrack.db` + `attachments/`), the `jobtrack` CLI and
-`skill/SKILL.md` (the only writer), and a read-only Express web view. Node >= 22,
+`skill/SKILL.md` (the only writer), and a read-only Express web view. Node 22.23.4+ or 24.22.1+,
 npm with `package-lock.json`. A scshafe-dev `service` project (`dev.toml`); the
 build conventions below are the repo's own and still apply.
 
