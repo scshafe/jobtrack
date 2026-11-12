@@ -36,6 +36,10 @@
     "mission-pipeline": "file:vendor/mission-pipeline"
   },
   "overrides": {
-    "mission-pipeline": "file:vendor/mission-pipeline"
+    "mission-pipeline": "file:vendor/mission-pipeline",
+    "js-beautify": {
+      "glob": "^14.0.2",
+      "minimatch": "^11.0.1"
+    }
   }
 }
